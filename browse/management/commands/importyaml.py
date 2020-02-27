@@ -47,6 +47,7 @@ class Command(BaseCommand):
 
     def create_format_specifications(self, specs):
         for spec_dict in specs:
+            uuid = spec_dict.get("uuid")
             document_ref = spec_dict.get("document_ref")
             uuid = spec_dict.get("uuid")
             doc_file_name = spec_dict.get("doc_file")
@@ -71,6 +72,7 @@ class Command(BaseCommand):
 
             if not self.dry_run:
                 format_spec = FormatSpecification.objects.create(
+                    uuid=uuid,
                     document_ref=document_ref,
                     title=spec_dict.get("title", ""),
                     doc_file=doc_file,
@@ -113,9 +115,7 @@ class Command(BaseCommand):
             format_spec = None
             if format_spec_ref:
                 try:
-                    format_spec = FormatSpecification.objects.get(
-                        document_ref=format_spec_ref
-                    )
+                    format_spec = FormatSpecification.objects.get(uuid=format_spec_ref)
                 except FormatSpecification.DoesNotExist:
                     self.stderr.write(
                         f"Error, format specification {format_spec_ref} "
