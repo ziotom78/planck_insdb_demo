@@ -261,8 +261,8 @@ def data_file_directory_path(instance, filename):
 
 
 def plot_file_directory_path(instance, filename):
-    ext = MIME_TO_EXTENSION[instance.plot_mime_type.split(";")[0]]
-    return Path("uploads") / "plot_files" / f"{instance.uuid}_{filename}.{ext}"
+    ext = MIME_TO_IMAGE_EXTENSION[instance.plot_mime_type.split(";")[0]]
+    return Path("uploads") / "plot_files" / f"{instance.uuid}_{instance.name}.{ext}"
 
 
 class DataFile(models.Model):
