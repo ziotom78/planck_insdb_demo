@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import json
-import sys
 import yaml
 
 from django.core.files import File
