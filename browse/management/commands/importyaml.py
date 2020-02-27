@@ -211,20 +211,26 @@ class Command(BaseCommand):
             help="Do not execute any action on the database (useful for testing)",
         )
         parser.add_argument(
-            "yaml_file",
+            "--json",
+            action="store_true",
+            help="Read the schema from a JSON file instead of a YAML file",
+        )
+        parser.add_argument(
+            "schema_file",
             nargs="+",
             help="""
-YAML file containing the specification of the records to be imported
+YAML/JSON file containing the specification of the records to be imported
 int the database. All the attachments (data files, specification documents,
-etc.) will be looked in the directory where this YAML file resides.
+etc.) will be looked in the directory where this file resides.
 """,
             type=str,
         )
 
     def handle(self, *args, **options):
         self.dry_run = options["dry_run"]
+        self.use_json = options["json"]
 
-        for curfile in options["yaml_file"]:
+        for curfile in options["schema_file"]:
             schema_filename = Path(curfile)
 
             # Retrieve every attachment from the same path where the
@@ -232,7 +238,10 @@ etc.) will be looked in the directory where this YAML file resides.
             self.attachment_source_path = schema_filename.parent
 
             with open(schema_filename, "rt") as inpf:
-                schema = yaml.safe_load(inpf)
+                if self.use_json:
+                    schema = json.load(inpf)
+                else:
+                    schema = yaml.safe_load(inpf)
 
             self.create_entities(schema.get("entities", []))
             self.create_format_specifications(schema.get("format_specifications", []))
