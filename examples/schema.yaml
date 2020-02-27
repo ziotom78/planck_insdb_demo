@@ -1,0 +1,112 @@
+entities:
+  - name: focal_plane
+    children:
+    - name: beams
+      children:
+      - name: horn01
+      - name: horn02
+      - name: horn03
+  - name: detectors
+    children:
+    - name: det01a
+    - name: det01b
+    - name: det02a
+    - name: det02b
+    - name: det03a
+    - name: det03b
+      
+format_specifications:
+  - document_ref: SPEC-001
+    title: "Format specification of GRASP beam files"
+    file_mime_type: "application/grasp"
+    doc_mime_type: "text/markdown; charset=UTF-8"
+    doc_file: "spec-001.md"
+  - document_ref: SPEC-002
+    title: "Format specification of synthetic beam files"
+    file_mime_type: "application/json"
+    doc_mime_type: "text/markdown; charset=UTF-8"
+    doc_file: "spec-002.md"
+  - document_ref: SPEC-003
+    title: "Format specification of detector noise files"
+    file_mime_type: "application/vnd.ms-excel"
+    doc_mime_type: "text/markdown; charset=UTF-8"
+    doc_file: "spec-003.md"
+
+quantities:
+  - name: horn01_grasp
+    format_spec: SPEC-001
+    parent_entity: horn01
+  - name: horn01_synth
+    format_spec: SPEC-002
+    parent_entity: horn01
+    dependencies:
+      - horn01_grasp
+
+  - name: horn02_grasp
+    format_spec: SPEC-001
+    parent_entity: horn02
+  - name: horn02_synth
+    format_spec: SPEC-002
+    parent_entity: horn02
+    dependencies:
+      - horn02_grasp
+      
+  - name: horn03_grasp
+    format_spec: SPEC-001
+    parent_entity: horn03
+  - name: horn03_synth
+    format_spec: SPEC-002
+    parent_entity: horn03
+    dependencies:
+      - horn03_grasp
+
+  - name: det01a_noise
+    format_spec: SPEC-003
+    parent_entity: det01a
+  - name: det01b_noise
+    format_spec: SPEC-003
+    parent_entity: det01b
+
+  - name: det02a_noise
+    format_spec: SPEC-003
+    parent_entity: det02a
+  - name: det02b_noise
+    format_spec: SPEC-003
+    parent_entity: det02b
+
+  - name: det03a_noise
+    format_spec: SPEC-003
+    parent_entity: det03a
+  - name: det03b_noise
+    format_spec: SPEC-003
+    parent_entity: det03b
+
+data_files:
+  - uuid: a6dd07ee-9721-4453-abb1-e58aa53a9c01
+    name: "horn01_grasp.fits"
+    metadata:
+      created_by: "D. J. Foo"
+    upload_date: "2020-01-01 15:34:00"
+    file_data: "horn01_grasp_v1.fits"
+    quantity: horn01_grasp
+    spec_version: "0.1"
+
+  - uuid: bd8e16eb-2e9d-46dd-a971-f446e953b9dc
+    name: "horn01_grasp.fits"
+    metadata:
+      created_by: "D. J. Foo"
+    upload_date: "2019-12-13 20:44:51"
+    file_data: "horn01_grasp_v0.fits"
+    quantity: horn01_grasp
+    spec_version: "0.1"
+
+  - uuid: 37bb70e4-29b2-4657-ba0b-4ccefbc5ae36
+    name: "horn01_synth.json"
+    metadata:
+      fwhm_deg: 1.0
+      ellipticity: 0.0
+    quantity: horn01_synth
+    upload_date: "2020-01-01 17:21:54"
+    dependencies:
+      - a6dd07ee-9721-4453-abb1-e58aa53a9c01
+    spec_version: "0.2"
