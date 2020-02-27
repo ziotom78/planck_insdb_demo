@@ -49,10 +49,10 @@ class Command(BaseCommand):
         for spec_dict in specs:
             document_ref = spec_dict.get("document_ref")
             uuid = spec_dict.get("uuid")
-            doc_file = spec_dict.get("doc_file")
+            doc_file_name = spec_dict.get("doc_file")
 
-            if doc_file:
-                file_path = self.attachment_source_path / doc_file
+            if doc_file_name:
+                file_path = self.attachment_source_path / doc_file_name
                 fp = open(file_path)
                 doc_file = File(fp, "r")
             else:
@@ -74,6 +74,7 @@ class Command(BaseCommand):
                     document_ref=document_ref,
                     title=spec_dict.get("title", ""),
                     doc_file=doc_file,
+                    doc_file_name=doc_file_name,
                     doc_mime_type=spec_dict.get("doc_mime_type", ""),
                     file_mime_type=spec_dict.get("file_mime_type", ""),
                 )
