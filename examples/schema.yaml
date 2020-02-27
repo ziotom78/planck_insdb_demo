@@ -1,112 +1,130 @@
 entities:
-  - name: focal_plane
+  - uuid: "2180affe-f9c3-4048-a407-6bd4d3ad71e5"
+    name: "focal_plane"
     children:
-    - name: beams
+    - uuid: "04c53542-e8a8-421f-aa3c-201abba1575d"
+      name: "beams"
       children:
-      - name: horn01
-      - name: horn02
-      - name: horn03
-  - name: detectors
+      - uuid: "a332a344-119f-45f1-9ac5-1b9bcd8cb28b"
+        name: "horn01"
+      - uuid: "3f1dabc6-22d1-4ffb-8521-2bf80c5eb861"
+        name: "horn02"
+      - uuid: "939307a3-ee39-4a45-b993-8cb44ff851a2"
+        name: "horn03"
+  - uuid: "14ea993f-e3a3-4219-80d4-561c579f7019"
+    name: "detectors"
     children:
-    - name: det01a
-    - name: det01b
-    - name: det02a
-    - name: det02b
-    - name: det03a
-    - name: det03b
+    - uuid: "dd32cb51-f7d5-4c03-bf47-766ce87dc3ba"
+      name: "det01a"
+    - uuid: "c12e5848-072f-46bc-a15b-a615a382db8d"
+      name: "det01b"
+    - uuid: "e49b2479-86e3-4087-81f8-8c202d424622"
+      name: "det02a"
+    - uuid: "c11a00b5-bcd7-42fc-bddf-8b19d8d7b974"
+      name: "det02b"
+    - uuid: "918b2ecd-55d1-4127-8ec2-e0f989892564"
+      name: "det03a"
+    - uuid: "43377e3d-e457-43fe-baef-4017b0db53b2"
+      name: "det03b"
       
 format_specifications:
-  - document_ref: SPEC-001
+  - document_ref: "SPEC-001"
     title: "Format specification of GRASP beam files"
     file_mime_type: "application/grasp"
     doc_mime_type: "text/markdown; charset=UTF-8"
     doc_file: "spec-001.md"
-  - document_ref: SPEC-002
+  - document_ref: "SPEC-002"
     title: "Format specification of synthetic beam files"
     file_mime_type: "application/json"
     doc_mime_type: "text/markdown; charset=UTF-8"
     doc_file: "spec-002.md"
-  - document_ref: SPEC-003
+  - document_ref: "SPEC-003"
     title: "Format specification of detector noise files"
     file_mime_type: "application/vnd.ms-excel"
     doc_mime_type: "text/markdown; charset=UTF-8"
     doc_file: "spec-003.md"
 
 quantities:
-  - name: horn01_grasp
-    format_spec: SPEC-001
-    parent_entity: horn01
-  - name: horn01_synth
-    format_spec: SPEC-002
-    parent_entity: horn01
-    dependencies:
-      - horn01_grasp
+  - uuid: "e9916db9-a234-4921-adfd-6c3bb4f816e9"
+    name: "horn01_grasp"
+    format_spec: "SPEC-001"
+    entity: "a332a344-119f-45f1-9ac5-1b9bcd8cb28b"
+  - uuid: "01eeffe6-ac90-4a55-8b72-8d49e5dbe7ad"
+    name: "horn01_synth"
+    format_spec: "SPEC-002"
+    entity: "a332a344-119f-45f1-9ac5-1b9bcd8cb28b"
 
-  - name: horn02_grasp
-    format_spec: SPEC-001
-    parent_entity: horn02
-  - name: horn02_synth
-    format_spec: SPEC-002
-    parent_entity: horn02
-    dependencies:
-      - horn02_grasp
+  - uuid: "4f1fc746-0ac7-4711-ad05-8b427e80e212"
+    name: "horn02_grasp"
+    format_spec: "SPEC-001"
+    entity: "3f1dabc6-22d1-4ffb-8521-2bf80c5eb861"
+  - uuid: "a43567c9-c0ac-4f9e-990d-1dcd02f30a20"
+    name: "horn02_synth"
+    format_spec: "SPEC-002"
+    entity: "3f1dabc6-22d1-4ffb-8521-2bf80c5eb861"
       
-  - name: horn03_grasp
-    format_spec: SPEC-001
-    parent_entity: horn03
-  - name: horn03_synth
-    format_spec: SPEC-002
-    parent_entity: horn03
-    dependencies:
-      - horn03_grasp
+  - uuid: "4b3d1b8a-a8a3-4bbe-aaf5-3938235333fa"
+    name: "horn03_grasp"
+    format_spec: "SPEC-001"
+    entity: "939307a3-ee39-4a45-b993-8cb44ff851a2"
+  - uuid: "34e7c1ce-307e-4729-8724-e0ac9c42da9b"
+    name: "horn03_synth"
+    format_spec: "SPEC-002"
+    entity: "939307a3-ee39-4a45-b993-8cb44ff851a2"
 
-  - name: det01a_noise
-    format_spec: SPEC-003
-    parent_entity: det01a
-  - name: det01b_noise
-    format_spec: SPEC-003
-    parent_entity: det01b
+  - uuid: "ed00a4e7-4984-40c8-810d-c615361a493d"
+    name: "det01a_noise"
+    format_spec: "SPEC-003"
+    entity: "dd32cb51-f7d5-4c03-bf47-766ce87dc3ba"
+  - uuid: "740636cc-70e0-4891-bbf7-9bf24fbb05e9"
+    name: "det01b_noise"
+    format_spec: "SPEC-003"
+    entity: "c12e5848-072f-46bc-a15b-a615a382db8d"
 
-  - name: det02a_noise
-    format_spec: SPEC-003
-    parent_entity: det02a
-  - name: det02b_noise
-    format_spec: SPEC-003
-    parent_entity: det02b
+  - uuid: "f98d5ac7-108c-4a2f-be28-40b647b495ef"
+    name: "det02a_noise"
+    format_spec: "SPEC-003"
+    entity: "e49b2479-86e3-4087-81f8-8c202d424622"
+  - uuid: "567110cd-2398-4185-85cb-26d231433a9b"
+    name: "det02b_noise"
+    format_spec: "SPEC-003"
+    entity: "c11a00b5-bcd7-42fc-bddf-8b19d8d7b974"
 
-  - name: det03a_noise
-    format_spec: SPEC-003
-    parent_entity: det03a
-  - name: det03b_noise
-    format_spec: SPEC-003
-    parent_entity: det03b
+  - uuid: "46666bd6-4dff-4cc8-a5c1-e787c90dd8b1"
+    name: "det03a_noise"
+    format_spec: "SPEC-003"
+    entity: "918b2ecd-55d1-4127-8ec2-e0f989892564"
+  - uuid: "69737046-71be-483a-81a8-dce706750345"
+    name: "det03b_noise"
+    format_spec: "SPEC-003"
+    entity: "43377e3d-e457-43fe-baef-4017b0db53b2"
 
 data_files:
-  - uuid: a6dd07ee-9721-4453-abb1-e58aa53a9c01
+  - uuid: "a6dd07ee-9721-4453-abb1-e58aa53a9c01"
     name: "horn01_grasp.fits"
     metadata:
       created_by: "D. J. Foo"
     upload_date: "2020-01-01 15:34:00"
     file_data: "horn01_grasp_v1.fits"
-    quantity: horn01_grasp
+    quantity: "e9916db9-a234-4921-adfd-6c3bb4f816e9"
     spec_version: "0.1"
 
-  - uuid: bd8e16eb-2e9d-46dd-a971-f446e953b9dc
+  - uuid: "bd8e16eb-2e9d-46dd-a971-f446e953b9dc"
     name: "horn01_grasp.fits"
     metadata:
       created_by: "D. J. Foo"
     upload_date: "2019-12-13 20:44:51"
     file_data: "horn01_grasp_v0.fits"
-    quantity: horn01_grasp
+    quantity: "e9916db9-a234-4921-adfd-6c3bb4f816e9"
     spec_version: "0.1"
 
-  - uuid: 37bb70e4-29b2-4657-ba0b-4ccefbc5ae36
+  - uuid: "37bb70e4-29b2-4657-ba0b-4ccefbc5ae36"
     name: "horn01_synth.json"
     metadata:
       fwhm_deg: 1.0
       ellipticity: 0.0
-    quantity: horn01_synth
+    quantity: "01eeffe6-ac90-4a55-8b72-8d49e5dbe7ad"
     upload_date: "2020-01-01 17:21:54"
     dependencies:
-      - a6dd07ee-9721-4453-abb1-e58aa53a9c01
+      - "a6dd07ee-9721-4453-abb1-e58aa53a9c01"
     spec_version: "0.2"

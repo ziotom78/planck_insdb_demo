@@ -26,13 +26,131 @@ in the database:
 
 """
 
+from collections import namedtuple
+from pathlib import Path
+
 import uuid
 from django.db import models
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
 
+FileType = namedtuple("ImageFileType", ["mime_type", "file_extension", "description",])
 
-class Entity(models.Model):
+# List of supported document types (for specification documents).
+# Please keep the most useful at the top of the list, then use
+# alphabetic order!
+DOCUMENT_FILE_TYPES = [
+    FileType(mime_type="text/plain", file_extension="txt", description="Plain text"),
+    FileType(mime_type="text/html", file_extension="html", description="HTML"),
+    FileType(
+        mime_type="application/pdf", file_extension="pdf", description="Adobe PDF"
+    ),
+    FileType(
+        mime_type="text/rtf",
+        file_extension="rtf",
+        description="Rich-Text Format (.rtf)",
+    ),
+    FileType(mime_type="text/markdown", file_extension="md", description="Markdown"),
+    FileType(
+        mime_type="application/x-abiword",
+        file_extension="abw",
+        description="AbiWord document",
+    ),
+    FileType(
+        mime_type="application/msword",
+        file_extension="doc",
+        description="Microsoft Word (.doc)",
+    ),
+    FileType(
+        mime_type="application/vnd.openxmlformats-officedocument"
+        ".wordprocessingml.document",
+        file_extension="docx",
+        description="Microsoft Word (.docx)",
+    ),
+    FileType(
+        mime_type="application/vnd.amazon.ebook",
+        file_extension="azw",
+        description="Amazon Kindle eBook",
+    ),
+    FileType(
+        mime_type="application/epub+zip",
+        file_extension="epub",
+        description="Electronic publication (EPUB)",
+    ),
+    FileType(
+        mime_type="application/vnd.oasis.opendocument.text",
+        file_extension="",
+        description="OpenDocument text document (.odt)",
+    ),
+    FileType(
+        mime_type="application/vnd.oasis.opendocument.presentation",
+        file_extension="odp",
+        description="OpenDocument presentation document (.odp)",
+    ),
+    FileType(
+        mime_type="application/vnd.oasis.opendocument.spreadsheet",
+        file_extension="ods",
+        description="OpenDocument spreadsheet document (.ods)",
+    ),
+    FileType(
+        mime_type="application/vnd.ms-powerpoint",
+        file_extension="ppt",
+        description="Microsoft PowerPoint (.ppt)",
+    ),
+    FileType(
+        mime_type="application/vnd.openxmlformats-officedocument"
+        ".presentationml.presentation",
+        file_extension="docx",
+        description="Microsoft PowerPoint (.pptx)",
+    ),
+    FileType(
+        mime_type="application/vnd.ms-excel",
+        file_extension="xls",
+        description="Microsoft Excel (.xls)",
+    ),
+    FileType(
+        mime_type="application/vnd.openxmlformats-officedocument"
+        ".spreadsheetml.sheet",
+        file_extension="xlsx",
+        description="Microsoft Excel (.xlsx)",
+    ),
+    FileType(
+        mime_type="application/octet-stream",
+        file_extension="bin",
+        description="Other (unknown)",
+    ),
+]
+
+# List of supported image types (for plots associated with data files)
+IMAGE_FILE_TYPES = [
+    FileType(mime_type="image/png", file_extension="png", description="PNG image"),
+    FileType(mime_type="image/jpeg", file_extension="jpg", description="Jpeg image"),
+    FileType(mime_type="image/svg+xml", file_extension="svg", description="SVG image"),
+    FileType(mime_type="image/apng", file_extension="apng", description="Animated PNG"),
+    FileType(
+        mime_type="image/bmp", file_extension="bmp", description="Windows bitmap image"
+    ),
+    FileType(mime_type="image/gif", file_extension="gif", description="GIF image"),
+    FileType(mime_type="image/x-icon", file_extension="ico", description="ICO image"),
+    FileType(mime_type="image/tiff", file_extension="tif", description="TIFF image"),
+    FileType(mime_type="image/webp", file_extension="webp", description="WebP image"),
+    FileType(
+        mime_type="application/octet-stream",
+        file_extension="bin",
+        description="Other (unknown)",
+    ),
+]
+
+# These dictionaries associate a MIME type with its extension:
+# MIME_TO_IMAGE_EXTENSION["image/tiff"] == "tif"
+MIME_TO_DOC_EXTENSION = {x.mime_type: x.file_extension for x in DOCUMENT_FILE_TYPES}
+MIME_TO_IMAGE_EXTENSION = {x.mime_type: x.file_extension for x in IMAGE_FILE_TYPES}
+
+
+class Entity(MPTTModel):
+    uuid = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4, editable=False
+    )
     name = models.CharField(
         max_length=256, help_text="Descriptive name for this entity"
     )
@@ -46,7 +164,18 @@ class Entity(models.Model):
         return self.name
 
 
+def format_spec_directory_path(instance, filename):
+    # The ".split" trick enables proper treatment of MIME types like
+    # "text/markdown; charset=UTF-8", because it removes what comes
+    # after the ";"
+    ext = MIME_TO_DOC_EXTENSION[instance.doc_mime_type.split(";")[0]]
+    return Path("uploads") / "format_spec" / f"{instance.uuid}_{filename}.{ext}"
+
+
 class FormatSpecification(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4, editable=False
+    )
     document_ref = models.CharField(
         "ID of the specification document",
         max_length=64,
@@ -59,16 +188,26 @@ class FormatSpecification(models.Model):
         + "for a file format",
     )
     doc_file = models.FileField(
-        "Specification document",
+        "file containing the specification document",
         null=True,
         blank=True,
+        upload_to=format_spec_directory_path,
         help_text="Downloadable copy of the specification document (optional)",
+    )
+    doc_file_name = models.CharField(
+        "name of the file containing the specification document",
+        max_length=256,
+        null=True,
+        blank=True,
+        help_text="Name of the file containing the specification document (optional)",
     )
     # Regarding the maximum length of a MIME type, see
     # https://stackoverflow.com/questions/643690/maximum-mimetype-length-when-storing-type-in-db
     doc_mime_type = models.CharField(
         "MIME type of the specification document",
         max_length=256,
+        choices=[(x.mime_type, x.description) for x in DOCUMENT_FILE_TYPES],
+        default=DOCUMENT_FILE_TYPES[0].mime_type,
         help_text="This specifies the MIME type of the downloadable copy "
         + "of the specification document",
     )
@@ -110,7 +249,16 @@ class Quantity(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.uuid[0:8]})"
+        return f"{self.name} ({str(self.uuid)[0:8]})"
+
+
+def data_file_directory_path(instance, filename):
+    return Path("uploads") / "data_files" / f"{instance.uuid}_{instance.name}"
+
+
+def plot_file_directory_path(instance, filename):
+    ext = MIME_TO_EXTENSION[instance.plot_mime_type.split(";")[0]]
+    return Path("uploads") / "plot_files" / f"{instance.uuid}_{filename}.{ext}"
 
 
 class DataFile(models.Model):
@@ -133,7 +281,10 @@ class DataFile(models.Model):
         help_text="JSON record containing metadata for the file",
     )
     file_data = models.FileField(
-        "File", blank=True, help_text="File contents (when present)"
+        "File",
+        blank=True,
+        upload_to=data_file_directory_path,
+        help_text="File contents (when present)",
     )
     quantity = models.ForeignKey(
         Quantity,
@@ -152,12 +303,18 @@ class DataFile(models.Model):
         + "produce this data file",
     )
     plot_file = models.FileField(
-        "Image file", blank=True, help_text="Plot of the data in the file (optional)"
+        "Image file",
+        blank=True,
+        upload_to=plot_file_directory_path,
+        help_text="Plot of the data in the file (optional)",
     )
     plot_mime_type = models.CharField(
         "MIME type of the image",
         max_length=256,
         blank=True,
+        null=True,
+        choices=[(x.mime_type, x.description) for x in IMAGE_FILE_TYPES],
+        default=None,
         help_text="This specifies the MIME type of the image",
     )
 
@@ -175,4 +332,4 @@ class DataFile(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.uuid[0:8]})"
+        return f"{self.name} ({str(self.uuid)[0:8]})"
