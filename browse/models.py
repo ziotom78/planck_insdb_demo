@@ -169,7 +169,11 @@ def format_spec_directory_path(instance, filename):
     # "text/markdown; charset=UTF-8", because it removes what comes
     # after the ";"
     ext = MIME_TO_DOC_EXTENSION[instance.doc_mime_type.split(";")[0]]
-    return Path("uploads") / "format_spec" / f"{instance.uuid}_{filename}.{ext}"
+
+    true_file_name = instance.doc_file_name
+    if not true_file_name:
+        true_file_name = ext
+    return Path("uploads") / "format_spec" / f"{instance.uuid}_{true_file_name}"
 
 
 class FormatSpecification(models.Model):
