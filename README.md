@@ -157,8 +157,8 @@ place to be learn, inspire, and create. Any contributions you make are
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL3 License. See `LICENSE` for more
-information.
+Distributed under the GPL3 License. See [`LICENSE.md`][license-url]
+for more information.
 
 
 
