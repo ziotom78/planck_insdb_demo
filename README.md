@@ -94,31 +94,32 @@ To install Poetry, see
 
 ### Installation
  
-1. Clone the repo
-```sh
-git clone https://github.com/ziotom78/instrumentdb.git
-```
-2. Install all the dependencies using `poetry`
-```sh
-poetry install
-```
+1.  Clone the repo:
+    ```sh
+    git clone https://github.com/ziotom78/instrumentdb.git
+    ```
+    
+2.  Install all the dependencies using `poetry`
+    ```sh
+    poetry install
+    ```
 
-3. Apply all the migrations and create a database
-```sh
-poetry run manage.py migrate
-```
+3.  Apply all the migrations and create a database
+    ```sh
+    poetry run manage.py migrate
+    ```
 
-4. Create a superuser
-```sh
-poetry run manage.py createsuperuser
-```
+4.  Create a superuser
+    ```sh
+    poetry run manage.py createsuperuser
+    ```
 
-4. Fire up the web server
-```sh
-poetry run manage.py runserver
-```
+4.  Fire up the web server
+    ```sh
+    poetry run manage.py runserver
+    ```
 
-5. Connect to http://127.0.0.1:8000/ and enjoy!
+5.  Connect to http://127.0.0.1:8000/ and enjoy!
 
 
 <!-- USAGE EXAMPLES -->
@@ -128,7 +129,7 @@ Use this space to show useful examples of how a project can be
 used. Additional screenshots, code examples and demos work well in
 this space. You may also link to more resources.
 
-_For more examples, please refer to the documentation.
+For more examples, please refer to the documentation.
 
 
 <!-- ROADMAP -->
