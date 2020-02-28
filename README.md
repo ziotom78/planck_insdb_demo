@@ -96,7 +96,7 @@ To install Poetry, see
  
 1.  Clone the repo:
     ```sh
-    git clone https://github.com/ziotom78/instrumentdb.git
+    git clone https://github.com/ziotom78/instrumentdb.git && cd instrumentdb
     ```
     
 2.  Install all the dependencies using `poetry`
@@ -104,7 +104,13 @@ To install Poetry, see
     poetry install
     ```
 
-3.  Apply all the migrations and create a database
+3.  Create a custom configuration file and customize it. Be sure to
+    put some random password in `SECRET_KEY`!
+    ```sh
+    cp .env.example .env && vim .env
+    ```
+    
+3.  Create the database
     ```sh
     poetry run manage.py migrate
     ```

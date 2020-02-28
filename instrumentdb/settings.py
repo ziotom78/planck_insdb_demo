@@ -12,22 +12,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from pathlib import Path
 import os
+
+from envparse import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+env = Env(
+    DEBUG=bool,
+    SECRET_KEY=str,
+    ALLOWED_HOSTS=dict(cast=list, subcast=str),
+    STORAGE_PATH=dict(cast=str, default="var"),
+    DATABASE_URL=dict(cast=str, default=str(Path("var") / "instrumentdb.sqlite3")),
+)
+env.read_envfile()
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "os(kcm!2w9a!_#6g5)oz&$f&14vx($u!#x*v8@(ibx90xb*ovc"
+# Be sure to check
+# https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env("DEBUG")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -85,12 +93,15 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
+
+def django_sqlite(file_name):
+    return {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": file_name,
     }
-}
+
+
+DATABASES = {"default": env("SQLITE_DATABASE", postprocessor=django_sqlite)}
 
 
 # Password validation
