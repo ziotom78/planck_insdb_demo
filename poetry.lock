@@ -102,6 +102,17 @@ django = ">=1.11"
 
 [[package]]
 category = "main"
+description = "Simple environment variable parsing"
+name = "envparse"
+optional = false
+python-versions = "*"
+version = "0.2.0"
+
+[package.extras]
+testing = ["pytest"]
+
+[[package]]
+category = "main"
 description = "Git Object Database"
 name = "gitdb"
 optional = false
@@ -308,7 +319,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "50ce5001125b0f463d4c78693110c68cf4763338e67f203052dbaf190ddf0ce4"
+content-hash = "02fec8d5439659f9c403ff5a4602d753aa88478cfb366de17ce066f8b8c5e689"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -347,6 +358,9 @@ django-mptt = [
 djangorestframework = [
     {file = "djangorestframework-3.11.0-py3-none-any.whl", hash = "sha256:05809fc66e1c997fd9a32ea5730d9f4ba28b109b9da71fccfa5ff241201fd0a4"},
     {file = "djangorestframework-3.11.0.tar.gz", hash = "sha256:e782087823c47a26826ee5b6fa0c542968219263fb3976ec3c31edab23a4001f"},
+]
+envparse = [
+    {file = "envparse-0.2.0.tar.gz", hash = "sha256:4f3b9a27bb55d27f124eb4adf006fec05e4588891c9a054a183a112645056eb7"},
 ]
 gitdb = [
     {file = "gitdb-4.0.2-py3-none-any.whl", hash = "sha256:284a6a4554f954d6e737cddcff946404393e030b76a282c6640df8efd6b3da5e"},
