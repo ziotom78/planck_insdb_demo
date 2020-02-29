@@ -16,7 +16,29 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from rest_framework import routers, serializers, viewsets
+
+from browse.views import (
+    UserViewSet,
+    GroupViewSet,
+    FormatSpecificationViewSet,
+    EntityViewSet,
+    QuantityViewSet,
+    DataFileViewSet,
+)
+
+################################################################################
+
+router = routers.DefaultRouter()
+router.register(r"users", UserViewSet)
+router.register(r"groups", GroupViewSet)
+router.register(r"format_specs", FormatSpecificationViewSet)
+router.register(r"entities", EntityViewSet)
+router.register(r"quantities", QuantityViewSet)
+router.register(r"data_files", DataFileViewSet)
+
 urlpatterns = [
+    path("", include(router.urls)),
     path("admin/", admin.site.urls),
-    path("api-auth/", include("rest_framework.urls")),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
