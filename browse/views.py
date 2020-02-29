@@ -78,8 +78,7 @@ class FormatSpecificationViewSet(viewsets.ModelViewSet):
 
 
 class EntityViewSet(viewsets.ModelViewSet):
-    # Only return root nodes!
-    queryset = Entity.objects.root_nodes()
+    queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
 

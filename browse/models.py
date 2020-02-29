@@ -240,12 +240,14 @@ class Quantity(models.Model):
     format_spec = models.ForeignKey(
         FormatSpecification,
         on_delete=models.CASCADE,
+        related_name="quantities",
         help_text="Reference to the format specification used for data files "
         + "associated with this quantity",
     )
     parent_entity = models.ForeignKey(
         Entity,
         on_delete=models.CASCADE,
+        related_name="quantities",
         help_text="Entity to whom this quantity is related",
     )
 
@@ -295,6 +297,7 @@ class DataFile(models.Model):
     quantity = models.ForeignKey(
         Quantity,
         on_delete=models.CASCADE,
+        related_name="data_files",
         help_text="Quantity associated with the data in this file",
     )
     spec_version = models.CharField(

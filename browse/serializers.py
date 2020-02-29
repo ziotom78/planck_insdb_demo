@@ -30,13 +30,26 @@ class FormatSpecificationSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class SubEntitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entity
+        fields = [
+            "uuid",
+            "name",
+        ]
+
+
 class EntitySerializer(serializers.HyperlinkedModelSerializer):
+    children = SubEntitySerializer(many=True, required=False)
+
     class Meta:
         model = Entity
         fields = [
             "uuid",
             "name",
             "parent",
+            "children",
+            "quantities",
         ]
 
 
@@ -48,6 +61,7 @@ class QuantitySerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "format_spec",
             "parent_entity",
+            "data_files",
         ]
 
 
