@@ -34,6 +34,8 @@ from django.db import models
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
 
+from instrumentdb.settings import STORAGE_PATH
+
 FileType = namedtuple("ImageFileType", ["mime_type", "file_extension", "description",])
 
 # List of supported document types (for specification documents).
@@ -173,7 +175,7 @@ def format_spec_directory_path(instance, filename):
     true_file_name = instance.doc_file_name
     if not true_file_name:
         true_file_name = ext
-    return Path("uploads") / "format_spec" / f"{instance.uuid}_{true_file_name}"
+    return STORAGE_PATH / "format_spec" / f"{instance.uuid}_{true_file_name}"
 
 
 class FormatSpecification(models.Model):
@@ -257,12 +259,12 @@ class Quantity(models.Model):
 
 
 def data_file_directory_path(instance, filename):
-    return Path("uploads") / "data_files" / f"{instance.uuid}_{instance.name}"
+    return STORAGE_PATH / "data_files" / f"{instance.uuid}_{instance.name}"
 
 
 def plot_file_directory_path(instance, filename):
     ext = MIME_TO_IMAGE_EXTENSION[instance.plot_mime_type.split(";")[0]]
-    return Path("uploads") / "plot_files" / f"{instance.uuid}_{instance.name}.{ext}"
+    return STORAGE_PATH / "plot_files" / f"{instance.uuid}_{instance.name}.{ext}"
 
 
 class DataFile(models.Model):
