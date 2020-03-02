@@ -1,0 +1,48 @@
+{% extends "browse/base_generic.html" %}
+
+{% block title %}{{ object.name }}{% endblock %}
+
+{% block body %}
+<h1>{{ object.name }}</h1>
+
+{% with most_recent_obj=object.quantity.data_files.all|first %}
+{% if most_recent_obj != object %}
+
+<p class="text-warning"><b>Warning</b>: a
+  <a href="{% url 'data-file-view' most_recent_obj.uuid %}">newer version</a>
+  of this data file ({{ most_recent_obj.upload_date|date }}) file
+  exist in the database.
+</p>
+  
+{% endif %}
+{% endwith %}
+
+<ul>
+  <li>File:
+    <a href="{% url 'data-file-download-view' object.uuid %}">{{ object.name }}</a>
+    ({{ object.file_data.size|filesizeformat }})</li>
+  <li>Quantity:
+    <a href="{% url 'quantity-view' object.quantity.uuid %}">
+      {{ object.quantity }}</a></li>
+  <li>Upload date: {{ object.upload_date|date }}</li>
+  
+  {% with format_spec=object.quantity.format_spec %}
+  <li>Specification document:
+    <a href="{% url 'format-spec-download-view' format_spec.uuid %}">
+      {{ object.quantity.format_spec }}</a>,
+    version {{ object.spec_version }}
+    (<a href="{% url 'format-spec-view' format_spec.uuid %}">{{ format_spec.uuid|truncatechars:8 }}</a>)</li>
+  {% endwith %}
+</ul>
+
+{% if object.dependencies.all %}
+<h2>Dependencies</h2>
+
+<ul>
+  {% for cur_obj in object.dependencies.all %}
+  <li><a href="{% url 'data-file-view' cur_obj.uuid %}">{{ cur_obj }}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}

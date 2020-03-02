@@ -1,0 +1,47 @@
+{% extends "browse/base_generic.html" %}
+{% load mptt_tags %}
+
+{% block title %}{{ object.name|capfirst }}{% endblock %}
+
+{% block body %}
+<h1>{{ object.name|capfirst }} (entity)</h1>
+
+<ul>
+  {% if object.parent %}
+  <li>Parent:
+    <a href="{% url 'entity-view' object.parent.uuid %}">{{ object.parent }}</a>
+  </li>
+  {% else %}
+  <li>Root object (go to the <a href="{% url 'entity-list' %}">list of entities</a>)</li>
+  {% endif %}
+
+  {% if object.children.all %}
+  <li>Children:
+    <ul>
+      {% for cur_obj in object.children.all %}
+      <li><a href="{% url 'entity-view' cur_obj.uuid %}">{{ cur_obj }}</a></li>
+      {% endfor %}
+    </ul>
+  </li>
+  {% endif %}
+</ul>
+
+{% if object.quantities.all %}
+<table class="table table-striped table-bordered table-hover">
+  <caption>List of quantities</caption>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Data files</th>
+    </tr>
+  </thead>  
+  {%for cur_obj in object.quantities.all %}
+  <tr>
+    <td><a href="{% url 'quantity-view' cur_obj.uuid %}">{{ cur_obj }}</a></td>
+    <td>{{ cur_obj.data_files.all|length }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "browse/base_generic.html" %}
+{% block title %}{{ object.title }} ({{ object.document_ref }}){% endblock %}
+
+{% block body %}
+<h1>{{ object.title }} ({{ object.document_ref }})</h1>
+
+<a href="{% url 'format-spec-download-view' object.uuid %}">Download</a>
+{% endblock %}

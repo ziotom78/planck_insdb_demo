@@ -1,0 +1,25 @@
+{% extends "browse/base_generic.html" %}
+{% block title %}Entities{% endblock %}
+
+{% block body %}
+{% load mptt_tags %}
+
+<h1>Entities</h1>
+
+<ul class="list-unstyled">
+  {% recursetree object_list %}
+  <li class="media">
+    <div class="media-body">
+      <a href="{% url 'entity-view' node.uuid %}">{{ node.name|capfirst }}</a>
+      ({{ node.uuid|truncatechars:8 }})
+      {% if not node.is_leaf_node %}
+      <ul class="children">
+        {{ children }}
+      </ul>
+      {% endif %}
+    </div>
+  </li>
+  {% endrecursetree %}
+</ul>
+
+{% endblock %}
