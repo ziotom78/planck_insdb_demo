@@ -64,11 +64,6 @@ urlpatterns = [
         name="format-spec-list-view",
     ),
     path(
-        "browse/format_specs/<pk>",
-        FormatSpecificationView.as_view(),
-        name="format-spec-view",
-    ),
-    path(
         "browse/format_specs/<pk>/download/",
         FormatSpecificationDownloadView.as_view(),
         name="format-spec-download-view",

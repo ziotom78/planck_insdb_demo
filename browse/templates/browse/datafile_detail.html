@@ -17,23 +17,26 @@
 {% endif %}
 {% endwith %}
 
-<ul>
-  <li>File:
-    <a href="{% url 'data-file-download-view' object.uuid %}">{{ object.name }}</a>
-    ({{ object.file_data.size|filesizeformat }})</li>
-  <li>Quantity:
-    <a href="{% url 'quantity-view' object.quantity.uuid %}">
-      {{ object.quantity }}</a></li>
-  <li>Upload date: {{ object.upload_date|date }}, {{ object.upload_date|time }}</li>
+<div class="row">
+  <ul>
+    <li>Quantity:
+      <a href="{% url 'quantity-view' object.quantity.uuid %}">
+        {{ object.quantity }}</a></li>
+    <li>Upload date: {{ object.upload_date|date }}, {{ object.upload_date|time }}</li>
   
-  {% with format_spec=object.quantity.format_spec %}
-  <li>Specification document:
-    <a href="{% url 'format-spec-download-view' format_spec.uuid %}">
-      {{ object.quantity.format_spec }}</a>,
-    version {{ object.spec_version }}
-    (<a href="{% url 'format-spec-view' format_spec.uuid %}">{{ format_spec.uuid|truncatechars:8 }}</a>)</li>
-  {% endwith %}
-</ul>
+    {% with format_spec=object.quantity.format_spec %}
+    <li>Specification document:
+      <a href="{% url 'format-spec-download-view' format_spec.uuid %}">
+        {{ object.quantity.format_spec }}</a>,
+      version {{ object.spec_version }}
+      (<a href="{% url 'format-spec-download-view' format_spec.uuid %}">{{ format_spec.uuid|truncatechars:8 }}</a>)</li>
+    {% endwith %}
+  </ul>
+</div>
+
+<div class="row justify-content-end">
+  <a class="btn btn-primary" href="{% url 'data-file-download-view' object.uuid %}">Download ({{ object.file_data.size|filesizeformat }})</a>
+</div>
 
 {% if object.dependencies.all %}
 <h2>Dependencies</h2>
