@@ -9,6 +9,7 @@
     <tr>
       <th scope="col">Title</th>
       <th scope="col">Reference</th>
+      <th scope="col">MIME type</th>
       <th scope="col">UUID</th>
     </tr>
   </thead>
@@ -19,6 +20,7 @@
       <a href="{% url 'format-spec-download-view' spec.uuid %}">{{ spec.title }}</a>
     </td>
     <td>{{ spec.document_ref}}</td>
+    <td>{{ spec.file_mime_type }}</td>
     <td>{{ spec.uuid }}</td>
   </tr>
   {% endfor %}
