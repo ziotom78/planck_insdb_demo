@@ -62,10 +62,6 @@ class FormatSpecificationListView(ListView):
     model = FormatSpecification
 
 
-class FormatSpecificationView(DetailView):
-    model = FormatSpecification
-
-
 class FormatSpecificationDownloadView(View):
     def get(self, request, pk):
         "Allow the user to download a data file"

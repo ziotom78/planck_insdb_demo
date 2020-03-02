@@ -24,7 +24,6 @@ from browse.views import (
     entity_tree_view,
     EntityView,
     FormatSpecificationListView,
-    FormatSpecificationView,
     FormatSpecificationDownloadView,
     QuantityView,
     UserViewSet,
