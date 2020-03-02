@@ -9,11 +9,10 @@
 {% if most_recent_obj != object %}
 
 <div class="alert alert-warning" role="alert">
-  <p><strong>Warning</strong>: a
+  <strong>Warning</strong>: a
     <a href="{% url 'data-file-view' most_recent_obj.uuid %}">newer version</a>
     of this data file ({{ most_recent_obj.upload_date|date }},
     {{ most_recent_obj.upload_date|time }}) file exist in the database.
-  </p>
 </div>
   
 {% endif %}
@@ -30,8 +29,7 @@
     <li>Specification document:
       <a href="{% url 'format-spec-download-view' format_spec.uuid %}">
         {{ object.quantity.format_spec }}</a>,
-      version {{ object.spec_version }}
-      (<a href="{% url 'format-spec-download-view' format_spec.uuid %}">{{ format_spec.uuid|truncatechars:8 }}</a>)</li>
+      version {{ object.spec_version }}</li>
     {% endwith %}
   </ul>
 </div>
