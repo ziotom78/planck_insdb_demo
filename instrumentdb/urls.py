@@ -19,6 +19,14 @@ from django.urls import include, path
 from rest_framework import routers, serializers, viewsets
 
 from browse.views import (
+    DataFileView,
+    DataFilePlotDownloadView,
+    DataFileDownloadView,
+    entity_tree_view,
+    EntityView,
+    FormatSpecificationListView,
+    FormatSpecificationDownloadView,
+    QuantityView,
     UserViewSet,
     GroupViewSet,
     FormatSpecificationViewSet,
@@ -38,7 +46,31 @@ router.register(r"quantities", QuantityViewSet)
 router.register(r"data_files", DataFileViewSet)
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", entity_tree_view, name="entity-list-view"),
+    path("api/", include(router.urls)),
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("browse/data_files/<pk>/", DataFileView.as_view(), name="data-file-view"),
+    path(
+        "browse/data_files/<pk>/download/",
+        DataFileDownloadView.as_view(),
+        name="data-file-download-view",
+    ),
+    path(
+        "browse/data_files/<pk>/plot/",
+        DataFilePlotDownloadView.as_view(),
+        name="data-file-plot-view",
+    ),
+    path("browse/entities/<pk>/", EntityView.as_view(), name="entity-view"),
+    path("browse/quantities/<pk>/", QuantityView.as_view(), name="quantity-view"),
+    path(
+        "browse/format_specs/",
+        FormatSpecificationListView.as_view(),
+        name="format-spec-list-view",
+    ),
+    path(
+        "browse/format_specs/<pk>/download/",
+        FormatSpecificationDownloadView.as_view(),
+        name="format-spec-download-view",
+    ),
 ]

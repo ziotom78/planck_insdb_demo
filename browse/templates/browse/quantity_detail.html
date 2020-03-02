@@ -1,0 +1,39 @@
+{% extends "browse/base_generic.html" %}
+{% block title %}Quantity «{{ object.name }}»{% endblock %}
+
+{% block body %}
+<h1>Quantity «{{ object.name }}»</h1>
+
+<ul>
+  <li>Format specification:
+    <a href="{% url 'format-spec-download-view' object.format_spec.uuid %}">
+      {{ object.format_spec }}</a></li>
+  <li>Entity:
+    <a href="{% url 'entity-view' object.parent_entity.uuid %}">
+      {{ object.parent_entity }}</a></li>
+</ul>
+
+{% if object.data_files.all %}
+<h2>Data files</h2>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th scope="col">File name</th>
+      <th scope="col">Size</th>
+      <th scope="col">Upload date</th>
+      <th scope="col">UUID</th>
+    </tr>
+  </thead>
+  {% for cur_obj in object.data_files.all %}
+  <tr>
+    <td><a href="{% url 'data-file-view' cur_obj.uuid %}">{{ cur_obj.name }}</a></td>
+    <td>{{ cur_obj.file_data.size|filesizeformat }}</td>
+    <td>{{ cur_obj.upload_date|date }}, {{ cur_obj.upload_date|time }}</td>
+    <td>{{ cur_obj.uuid }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

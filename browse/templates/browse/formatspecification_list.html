@@ -1,0 +1,29 @@
+{% extends "browse/base_generic.html" %}
+{% block title %}List of format specifications{% endblock %}
+
+{% block body %}
+<h1>List of format specifications</h1>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">Reference</th>
+      <th scope="col">MIME type</th>
+      <th scope="col">UUID</th>
+    </tr>
+  </thead>
+  
+  {% for spec in object_list %}
+  <tr>
+    <td>
+      <a href="{% url 'format-spec-download-view' spec.uuid %}">{{ spec.title }}</a>
+    </td>
+    <td>{{ spec.document_ref}}</td>
+    <td>{{ spec.file_mime_type }}</td>
+    <td>{{ spec.uuid }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
