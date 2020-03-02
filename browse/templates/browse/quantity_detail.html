@@ -29,7 +29,7 @@
   <tr>
     <td><a href="{% url 'data-file-view' cur_obj.uuid %}">{{ cur_obj.name }}</a></td>
     <td>{{ cur_obj.file_data.size|filesizeformat }}</td>
-    <td>{{ cur_obj.upload_date|date }}</td>
+    <td>{{ cur_obj.upload_date|date }}, {{ cur_obj.upload_date|time }}</td>
     <td>{{ cur_obj.uuid }}</td>
   </tr>
   {% endfor %}
