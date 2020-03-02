@@ -18,6 +18,16 @@
 {% endif %}
 {% endwith %}
 
+{% if object.plot_file %}
+<figure class="figure">
+  <img
+    src="{% url 'data-file-plot-view' object.uuid %}"
+    class="img-fluid"
+    alt="Plot of the data file">
+  <figcaption class="figure-caption">Plot of the data file</figcaption>
+</figure>
+{% endif %}
+
 <div class="row">
   <ul>
     <li>Quantity:

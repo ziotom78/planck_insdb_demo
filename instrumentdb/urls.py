@@ -20,6 +20,7 @@ from rest_framework import routers, serializers, viewsets
 
 from browse.views import (
     DataFileView,
+    DataFilePlotDownloadView,
     DataFileDownloadView,
     entity_tree_view,
     EntityView,
@@ -54,6 +55,11 @@ urlpatterns = [
         "browse/data_files/<pk>/download/",
         DataFileDownloadView.as_view(),
         name="data-file-download-view",
+    ),
+    path(
+        "browse/data_files/<pk>/plot/",
+        DataFilePlotDownloadView.as_view(),
+        name="data-file-plot-view",
     ),
     path("browse/entities/<pk>/", EntityView.as_view(), name="entity-view"),
     path("browse/quantities/<pk>/", QuantityView.as_view(), name="quantity-view"),

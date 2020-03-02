@@ -94,6 +94,21 @@ class DataFileDownloadView(View):
         return resp
 
 
+class DataFilePlotDownloadView(View):
+    def get(self, request, pk):
+        "Allow the user to download the plot associated with a data file"
+
+        cur_object = get_object_or_404(DataFile, pk=pk)
+        plot_file_data = cur_object.plot_file
+        plot_file_data.open()
+        data = plot_file_data.read()
+        resp = HttpResponse(data, content_type=cur_object.plot_mime_type)
+        resp["Content-Disposition"] = 'attachment; filename="{0}"'.format(
+            Path(cur_object.name).name
+        )
+        return resp
+
+
 ################################################################################
 # REST API
 
