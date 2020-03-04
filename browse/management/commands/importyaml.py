@@ -59,6 +59,8 @@ class Command(BaseCommand):
                     cur_entity = Entity.objects.create(
                         uuid=uuid, name=cur_entity_name, parent=parent
                     )
+                else:
+                    cur_entity = cur_entity[0]
             else:
                 cur_entity = cur_entity_name
 
@@ -69,15 +71,15 @@ class Command(BaseCommand):
                     nest_level=nest_level + 1,
                 )
 
+            if not self.dry_run:
+                cur_entity.save()
+
             # Recursively create children
             self.create_entities(
                 entity_dict.get("children", []),
                 parent=cur_entity,
                 nest_level=nest_level + 1,
             )
-
-            if not self.dry_run:
-                cur_entity.save()
 
     def create_format_specifications(self, specs):
         for spec_dict in specs:

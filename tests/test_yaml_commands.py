@@ -19,7 +19,31 @@ def check_db_size(
 class TestNestedYamlIO(TestCase):
     def test_import_nested_yaml(self):
         input_file = Path(__file__).parent / ".." / "examples" / "schema1.yaml"
+
+        # Test a dry run
+        call_command("importyaml", "--dry-run", input_file)
+        check_db_size(
+            self,
+            entity_len=0,
+            format_spec_len=0,
+            quantity_len=0,
+            data_file_len=0,
+            release_len=0,
+        )
+
+        # Test a normal import
         call_command("importyaml", input_file)
+        check_db_size(
+            self,
+            entity_len=12,
+            format_spec_len=3,
+            quantity_len=12,
+            data_file_len=3,
+            release_len=1,
+        )
+
+        # Test that --no-overwrite works
+        call_command("importyaml", "--no-overwrite", input_file)
         check_db_size(
             self,
             entity_len=12,
