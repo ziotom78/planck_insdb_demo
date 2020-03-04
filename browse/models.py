@@ -333,6 +333,12 @@ class DataFile(models.Model):
         help_text="This specifies the MIME type of the image",
     )
 
+    # This points to a release. It is used only for data files that
+    # belong to official releases of an Instrument Database
+    release_tag = models.ForeignKey(
+        "Release", models.SET_NULL, blank=True, null=True, related_name="data_files"
+    )
+
     comment = models.TextField(max_length=4096, blank=True, help_text="Free-form notes")
 
     # When querying *all* the DataFile objects in a database, the
@@ -348,3 +354,22 @@ class DataFile(models.Model):
 
     def __str__(self):
         return f"{self.name} ({str(self.uuid)[0:8]})"
+
+
+class Release(models.Model):
+    tag = models.CharField(
+        "version tag",
+        max_length=32,
+        primary_key=True,
+        unique=True,
+        help_text="String uniquely identifying the version",
+    )
+
+    rel_date = models.DateTimeField(
+        "release date",
+        default=timezone.now,
+        editable=True,
+        help_text="Release date of the tag",
+    )
+
+    comments = models.CharField(max_length=4096, blank=True, help_text="Free-form text")

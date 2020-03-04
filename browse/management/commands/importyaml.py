@@ -8,7 +8,7 @@ from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
 from django.core.management.base import BaseCommand, CommandError
-from browse.models import Entity, Quantity, DataFile, FormatSpecification
+from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 
 
 class Command(BaseCommand):
@@ -203,6 +203,34 @@ class Command(BaseCommand):
             if plot_fp:
                 plot_fp.close()
 
+    def create_releases(self, releases):
+        for rel_dict in releases:
+            tag = rel_dict.get("tag")
+            comments = rel_dict.get("comments")
+            data_files = rel_dict.get("data_files")
+
+            try:
+                rel_date = make_aware(parse_datetime(rel_dict.get("release_date")))
+            except ValueError:
+                raise CommandError(f"invalid date for release {tag}")
+
+            if not rel_date:
+                raise CommandError(f"no date specified for release {tag}")
+
+            self.stdout.write(
+                f'Release tag "{tag}" ({rel_date}), {len(data_files)} objects'
+            )
+
+            if not self.dry_run:
+                cur_release = Release.objects.create(
+                    tag=tag, rel_date=rel_date, comments=comments,
+                )
+
+                for cur_uuid in data_files:
+                    cur_release.data_files.add(DataFile.objects.get(uuid=cur_uuid))
+
+                cur_release.save()
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--dry-run",
@@ -246,3 +274,4 @@ etc.) will be looked in the directory where this file resides.
             self.create_format_specifications(schema.get("format_specifications", []))
             self.create_quantities(schema.get("quantities", []))
             self.create_data_files(schema.get("data_files", []))
+            self.create_releases(schema.get("releases", []))

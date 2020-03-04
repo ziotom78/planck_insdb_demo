@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from rest_framework import routers, serializers, viewsets
 
@@ -33,6 +33,8 @@ from browse.views import (
     EntityViewSet,
     QuantityViewSet,
     DataFileViewSet,
+    api_release_view,
+    browse_release_view,
 )
 
 ################################################################################
@@ -72,5 +74,12 @@ urlpatterns = [
         "browse/format_specs/<pk>/download/",
         FormatSpecificationDownloadView.as_view(),
         name="format-spec-download-view",
+    ),
+    re_path(
+        r"^releases/(?P<rel_name>[\w.-]+)/(?P<reference>[\w./-]+)/$", api_release_view
+    ),
+    re_path(
+        r"^browse/releases/(?P<rel_name>[\w.-]+)/(?P<reference>[\w./-]+)/$",
+        browse_release_view,
     ),
 ]

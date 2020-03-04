@@ -16,6 +16,7 @@ from browse.models import (
     Quantity,
     DataFile,
     FormatSpecification,
+    Release,
     plot_file_directory_path,
 )
 
@@ -199,6 +200,25 @@ class Command(BaseCommand):
 
         return result
 
+    def dump_releases(self, releases):
+        result = []
+        for cur_release in releases:
+            cur_entry = OrderedDict(
+                [
+                    ("tag", Quoted(cur_release.tag)),
+                    ("release_date", Quoted(cur_release.rel_date)),
+                    ("comments", Quoted(cur_release.comments)),
+                    (
+                        "data_files",
+                        [Quoted(x.uuid) for x in cur_release.data_files.all()],
+                    ),
+                ]
+            )
+
+            result.append(cur_entry)
+
+        return result
+
     def save_schema(self, output_file_path):
         try:
             this_repo = git.Repo(search_parent_directories=True)
@@ -229,6 +249,7 @@ class Command(BaseCommand):
                 ),
                 ("quantities", self.dump_quantities(Quantity.objects.all())),
                 ("data_files", self.dump_data_files(DataFile.objects.all())),
+                ("releases", self.dump_releases(Release.objects.all())),
             ]
         )
 
