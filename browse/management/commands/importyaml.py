@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import json
+from uuid import UUID
 import yaml
 
 from django.core.files import File
@@ -13,6 +14,26 @@ from browse.models import Entity, Quantity, DataFile, FormatSpecification, Relea
 
 def spaces(nest_level):
     return " " * (nest_level * 2)
+
+
+def build_query_from_uuid_or_name(key, name_field="name"):
+    """Return the list of arguments to a 'get' method for a Django's model
+
+    If "key" is a valid UUID, the function returns the dictionary associating
+    "uuid" (string) with the key, otherwise it associates "name" with the key.
+
+    This can be used in the following code::
+
+      Model.object.get(**build_query_from_uuid_or_name(key))
+    """
+
+    try:
+        _ = UUID(key, version=4)
+        query = {"uuid": key}
+    except ValueError:
+        query = {name_field: key}
+
+    return query
 
 
 class Command(BaseCommand):
@@ -73,8 +94,8 @@ class Command(BaseCommand):
 
             if doc_file_name:
                 file_path = self.attachment_source_path / doc_file_name
-                fp = open(file_path)
-                doc_file = File(fp, "r")
+                fp = open(file_path, "rb")
+                doc_file = File(fp, "rb")
             else:
                 file_path = "<no file>"
                 fp = None
@@ -131,6 +152,7 @@ class Command(BaseCommand):
 
                 try:
                     parent_entity = Entity.objects.get(uuid=parent_uuid)
+
                 except Entity.DoesNotExist:
                     raise CommandError(
                         f"parent {parent_uuid[0:6]} for {name} "
@@ -141,7 +163,11 @@ class Command(BaseCommand):
             format_spec = None
             if format_spec_ref:
                 try:
-                    format_spec = FormatSpecification.objects.get(uuid=format_spec_ref)
+                    format_spec = FormatSpecification.objects.get(
+                        **build_query_from_uuid_or_name(
+                            format_spec_ref, name_field="document_ref"
+                        )
+                    )
                 except FormatSpecification.DoesNotExist:
                     self.stderr.write(
                         f"Error, format specification {format_spec_ref} "
