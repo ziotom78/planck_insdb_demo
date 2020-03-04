@@ -17,7 +17,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![GPL3 License][license-shield]][license-url]
-
+[![Documentation Status][docs-shield]][docs-url]
 
 
 <!-- PROJECT LOGO -->
@@ -32,7 +32,7 @@
   <p align="center">
     A RESTful database to manage specifications of complex scientific instruments
     <br />
-    <a href="https://github.com/ziotom78/instrumentdb"><strong>Explore the docs »</strong></a>
+    <a href="https://instrumentdb.readthedocs.io/en/latest/?badge=latest"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/ziotom78/instrumentdb">View Demo</a>
@@ -135,7 +135,7 @@ Use this space to show useful examples of how a project can be
 used. Additional screenshots, code examples and demos work well in
 this space. You may also link to more resources.
 
-For more examples, please refer to the documentation.
+For more examples, please refer to the [documentation][docs-url].
 
 
 <!-- ROADMAP -->
@@ -200,3 +200,5 @@ Project Link:
 [license-shield]: https://img.shields.io/github/license/ziotom78/instrumentdb.svg?style=flat-square
 [license-url]: https://github.com/ziotom78/instrumentdb/blob/master/LICENSE.md
 [product-screenshot]: images/screenshot.png
+[docs-shield]: https://readthedocs.org/projects/instrumentdb/badge/?version=latest
+[docs-url]: https://instrumentdb.readthedocs.io/en/latest/?badge=latest
