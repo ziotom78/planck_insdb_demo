@@ -3,9 +3,9 @@
 import json
 
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from django.contrib.auth.models import User, Group
 from browse.models import Entity, Quantity, DataFile, FormatSpecification
-from django.urls import reverse
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -37,7 +37,9 @@ class FormatSpecificationSerializer(serializers.HyperlinkedModelSerializer):
             instance
         )
         representation["download_link"] = reverse(
-            "format-spec-download-view", kwargs={"pk": instance.uuid}
+            "format-spec-download-view",
+            kwargs={"pk": instance.uuid},
+            request=self.context["request"],
         )
 
         return representation
@@ -99,7 +101,14 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
         # Convert the string containing the metadata into a proper Python dictionary
         representation["metadata"] = json.loads(instance.metadata)
         representation["download_link"] = reverse(
-            "data-file-download-view", kwargs={"pk": instance.uuid}
+            "data-file-download-view",
+            kwargs={"pk": instance.uuid},
+            request=self.context["request"],
+        )
+        representation["plot_download_link"] = reverse(
+            "data-file-plot-view",
+            kwargs={"pk": instance.uuid},
+            request=self.context["request"],
         )
 
         return representation
