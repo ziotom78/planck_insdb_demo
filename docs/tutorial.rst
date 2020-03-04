@@ -248,11 +248,21 @@ Append the following text at the bottom of file :file:`tutorial.yaml`:
                format_spec: "DOC-0006-BANDSHAPE"
 
 
-Now, you have to tell InstrumentDB to create these entities and quantities
-in the database. Run the following command::
+Now, you have to tell InstrumentDB to create these entities and
+quantities in the database. Since the YAML file points to a number of
+files containing the specification documents (e.g.,
+:file:`tutorial_bandshapes.pdf`), it is better to use the version of
+:file:`tutorial.yaml` that is contained in the :file:`examples`
+directory. Run the following command::
 
-  poetry run manage.py importyaml tutorial.yaml
+  poetry run manage.py importyaml examples/tutorial.yaml
 
+.. warning::
+
+   Be sure *not* to run this command if you have already populated the
+   database, as it will mess up your structure. Better to install
+   another copy of InstrumentDB in a temporary directory and use that.
+  
 If everything goes well, the structure of entities and quantities will be
 loaded from the YAML file and used to provide a structure to the database.
 
