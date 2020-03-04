@@ -11,6 +11,10 @@ from django.core.management.base import BaseCommand, CommandError
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 
 
+def spaces(nest_level):
+    return " " * (nest_level * 2)
+
+
 class Command(BaseCommand):
     help = "Load records into the database from a YAML file"
     output_transaction = True
@@ -21,20 +25,28 @@ class Command(BaseCommand):
             cur_entity_name = entity_dict.get("name")
             uuid = entity_dict.get("uuid")
 
-            spaces = " " * (nest_level * 2)
             if uuid:
-                self.stdout.write(spaces + f"Entity {cur_entity_name} ({uuid[0:6]})")
+                self.stdout.write(
+                    spaces(nest_level) + f"Entity {cur_entity_name} ({uuid[0:6]})"
+                )
             else:
-                self.stdout.write(spaces + f"Entity {cur_entity_name}")
+                self.stdout.write(spaces(nest_level) + f"Entity {cur_entity_name}")
 
             if not self.dry_run:
-                cur_entity = Entity.objects.get(uuid=uuid)
+                cur_entity = Entity.objects.filter(uuid=uuid)
                 if not (self.no_overwrite and cur_entity):
                     cur_entity = Entity.objects.create(
                         uuid=uuid, name=cur_entity_name, parent=parent
                     )
             else:
                 cur_entity = cur_entity_name
+
+            if "quantities" in entity_dict:
+                self.create_quantities(
+                    entity_dict["quantities"],
+                    parent_entity=cur_entity,
+                    nest_level=nest_level + 1,
+                )
 
             # Recursively create children
             self.create_entities(
@@ -50,7 +62,7 @@ class Command(BaseCommand):
         for spec_dict in specs:
             document_ref = spec_dict.get("document_ref")
             uuid = spec_dict.get("uuid")
-            if self.no_overwrite and FormatSpecification.objects.get(uuid=uuid):
+            if self.no_overwrite and FormatSpecification.objects.filter(uuid=uuid):
                 self.stdout.write(
                     f"Format specification {document_ref} already exists in the database"
                 )
@@ -93,32 +105,37 @@ class Command(BaseCommand):
             if fp:
                 fp.close()
 
-    def create_quantities(self, quantities):
+    def create_quantities(self, quantities, parent_entity=None, nest_level=0):
         for quantity_dict in quantities:
             name = quantity_dict.get("name")
             uuid = quantity_dict.get("uuid")
             if uuid:
-                if self.no_overwrite and Quantity.objects.get(uuid=uuid):
-                    self.stdout.write(f"Quantity {name} already exists in the database")
+                if self.no_overwrite and Quantity.objects.filter(uuid=uuid):
+                    self.stdout.write(
+                        spaces(nest_level)
+                        + f"Quantity {name} already exists in the database"
+                    )
                     continue
-                self.stdout.write(f"Quantity {name} ({uuid[0:6]})")
+
+                self.stdout.write(spaces(nest_level) + f"Quantity {name} ({uuid[0:6]})")
             else:
-                self.stdout.write(f"Quantity {name}")
+                self.stdout.write(spaces(nest_level) + f"Quantity {name}")
 
             if self.dry_run:
                 continue
 
-            parent_uuid = quantity_dict.get("entity")
-            if not parent_uuid:
-                raise CommandError(f"expected entity for quantity {name}")
+            if not parent_entity:
+                parent_uuid = quantity_dict.get("entity")
+                if not parent_uuid:
+                    raise CommandError(f"expected entity for quantity {name}")
 
-            try:
-                parent_entity = Entity.objects.get(uuid=parent_uuid)
-            except Entity.DoesNotExist:
-                raise CommandError(
-                    f"parent {parent_uuid[0:6]} for {name} "
-                    f"({uuid[0:6]}) does not exist"
-                )
+                try:
+                    parent_entity = Entity.objects.get(uuid=parent_uuid)
+                except Entity.DoesNotExist:
+                    raise CommandError(
+                        f"parent {parent_uuid[0:6]} for {name} "
+                        f"({uuid[0:6]}) does not exist"
+                    )
 
             format_spec_ref = quantity_dict.get("format_spec")
             format_spec = None
@@ -138,14 +155,24 @@ class Command(BaseCommand):
                 parent_entity=parent_entity,
             )
 
+            if "data_files" in quantity_dict:
+                self.create_data_files(
+                    quantity_dict["data_files"],
+                    parent_quantity=quantity,
+                    nest_level=nest_level + 1,
+                )
+
             quantity.save()
 
-    def create_data_files(self, data_files):
+    def create_data_files(self, data_files, parent_quantity=None, nest_level=0):
         for data_file_dict in data_files:
             name = data_file_dict.get("name")
             uuid = data_file_dict.get("uuid")
-            if self.no_overwrite and DataFile.objects.get(uuid=uuid):
-                self.stdout.write(f"Data file {name} already exists in the database")
+            if self.no_overwrite and DataFile.objects.filter(uuid=uuid):
+                self.stdout.write(
+                    spaces(nest_level)
+                    + f"Data file {name} already exists in the database"
+                )
                 continue
 
             metadata = json.dumps(data_file_dict.get("metadata", {}))
@@ -171,6 +198,7 @@ class Command(BaseCommand):
                 fp = open(self.attachment_source_path / filename)
                 file_data = File(fp, "r")
             else:
+                fp = None
                 file_data = None
 
             if plot_filename:
@@ -181,18 +209,23 @@ class Command(BaseCommand):
                 plot_file = None
 
             if uuid:
-                self.stdout.write(f'Data file "{name}" ({uuid[0:6]}, {filename})')
+                self.stdout.write(
+                    spaces(nest_level) + f'Data file "{name}" ({uuid[0:6]}, {filename})'
+                )
             else:
-                self.stdout.write(f'Data file "{name}" ({filename})')
+                self.stdout.write(
+                    spaces(nest_level) + f'Data file "{name}" ({filename})'
+                )
 
             for cur_dep in dependencies:
-                self.stdout.write(f"  Depends on {cur_dep[0:6]}")
+                self.stdout.write(spaces(nest_level) + f"  Depends on {cur_dep[0:6]}")
 
             if self.dry_run:
                 continue
 
-            parent_uuid = data_file_dict.get("quantity", "")
-            parent = Quantity.objects.get(uuid=parent_uuid)
+            if not parent_quantity:
+                parent_uuid = data_file_dict.get("quantity", "")
+                parent_quantity = Quantity.objects.get(uuid=parent_uuid)
 
             cur_data_file = DataFile.objects.create(
                 uuid=uuid,
@@ -200,7 +233,7 @@ class Command(BaseCommand):
                 upload_date=upload_date,
                 metadata=metadata,
                 file_data=file_data,
-                quantity=parent,
+                quantity=parent_quantity,
                 spec_version=data_file_dict.get("spec_version"),
                 plot_file=plot_file,
                 plot_mime_type=data_file_dict.get("plot_mime_type"),
@@ -220,7 +253,7 @@ class Command(BaseCommand):
     def create_releases(self, releases):
         for rel_dict in releases:
             tag = rel_dict.get("tag")
-            if self.no_overwrite and Release.objects.get(tag=tag):
+            if self.no_overwrite and Release.objects.filter(tag=tag):
                 self.stdout.write(f"Release {tag} already exists in the database")
                 continue
 
@@ -294,8 +327,8 @@ etc.) will be looked in the directory where this file resides.
                 else:
                     schema = yaml.safe_load(inpf)
 
-            self.create_entities(schema.get("entities", []))
             self.create_format_specifications(schema.get("format_specifications", []))
+            self.create_entities(schema.get("entities", []))
             self.create_quantities(schema.get("quantities", []))
             self.create_data_files(schema.get("data_files", []))
             self.create_releases(schema.get("releases", []))
