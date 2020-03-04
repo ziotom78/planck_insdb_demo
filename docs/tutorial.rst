@@ -58,6 +58,9 @@ database structure that can be managed by InstrumentDB.
 Defining a schema
 -----------------
 
+Fundamental terminology
+~~~~~~~~~~~~~~~~~~~~~~~
+
 InstrumentDB organizes information according to the following concepts:
 
 Format specification
@@ -100,6 +103,78 @@ Release
    which are tagged with an unique name and whose data files can be accessed
    through that name.
 
+Entities, quantities, and data files are represented in the following diagram:
+
+.. figure:: _static/entities-and-quantities.png
+   :align:  center
+
+   Relationship between entities, quantities, and data files. The most recent
+   data file is shown with a thick border.
+
+Specification documents
+~~~~~~~~~~~~~~~~~~~~~~~
+
+We must first define the list of specification document for each quantity.
+The structure above assumes the following data formats:
+
+- Optical models; these might be proprietary files produced by some
+  simulation software like GRASP, for instance. The specification document
+  might well be the user's manual of the software, or a short technical
+  note detailing the assumptions that must be used in the creation of the
+  optical model (e.g., handedness of the coordinate system, measure units,
+  etc.).
+- Thermal models; again, these are usually proprietary files.
+- Calibration curves for the amplifiers; we can assume that they are saved
+  in CSV files. The format specification might be a text file specifying
+  what's in each column, and what are the assumptions used in the calculation
+  of these curves.
+- Data sheets for the amplifiers: we can assume this is the PDF file provided
+  by the vendor.
+- Bandshape response: usually a bandshape is encoded as a two-column table
+  that specifies the frequency and the response at that frequency.
+
+Let's assume that we have already collected all the documents listed above.
+Open a text editor and write the following YAML text:
+
+.. code-block:: yaml
+
+    format_specifications:
+      - document_ref: "DOC-0001-OPTICAL-MODEL"
+        title: "Optical models to be used in the experiment"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_optical_model.pdf"
+      - document_ref: "DOC-0002-THERMAL-MODEL"
+        title: "Thermal models to be used in the experiment"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_thermal_model.pdf"
+      - document_ref: "DOC-0003-OBS-STRATEGY"
+        title: "Format and measure units of the sky scanning parameters"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_obs_strategy.pdf"
+      - document_ref: "DOC-0004-CAL-CURVES"
+        title: "Calibration curves for the amplifiers"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_cal_curves.pdf"
+      - document_ref: "DOC-0005-AMPLIFIER-SPECS"
+        title: "FOO-BAR amplifier datasheet"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_ampl_datasheet.pdf"
+      - document_ref: "DOC-0006-BANDSHAPE"
+        title: "Format of bandshapes"
+        file_mime_type: "application/octet-stream"
+        doc_mime_type: "application/pdf"
+        doc_file: "tutorial_bandshapes.pdf"
+
+Save this into a file named :file:`tutorial.yaml`.
+
+Organization of entities and quantities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 In our example, we might think of the following structure for our entities:
 
 - Telescope
@@ -134,45 +209,11 @@ with its contents. Users have still the possibility to manually create
 each entity and quantity using the web interface, but for deeply-nested
 structures like the one above, it is better to go through a text file.
 
-We must first define the list of specification document for each quantity.
-The structure above assumes the following data formats:
-
-- Optical models; these might be proprietary files produced by some
-  simulation software like GRASP, for instance. The specification document
-  might well be the user's manual of the software, or a short technical
-  note detailing the assumptions that must be used in the creation of the
-  optical model (e.g., handedness of the coordinate system, measure units,
-  etc.).
-- Thermal models; again, these are usually proprietary files.
-- Calibration curves for the amplifiers; we can assume that they are saved
-  in CSV files. The format specification might be a text file specifying
-  what's in each column, and what are the assumptions used in the calculation
-  of these curves.
-- Data sheets for the amplifiers: we can assume this is the PDF file provided
-  by the vendor.
-- Bandshape response: usually a bandshape is encoded as a two-column table
-  that specifies the frequency and the response at that frequency.
-
-Let's assume that we have already collected all the documents listed above.
-Open a text editor and write the following YAML text:
+Append the following text at the bottom of file :file:`tutorial.yaml`:
 
 .. code-block:: yaml
 
-  format_specifications:
-    - document_ref: "DOC-0001-OPTICAL-MODEL"
-      title: "Optical models to be used in the experiment"
-      file_mime_type: "application/octet-stream"
-      doc_mime_type: "application/pdf"
-      doc_file: "optical_model_specifications.pdf"
-    - document_ref: "DOC-0001-THERMAL-MODEL"
-      title: "Thermal models to be used in the experiment"
-      file_mime_type: "application/octet-stream"
-      doc_mime_type: "application/pdf"
-      doc_file: "thermal_model_specifications.pdf"
-
-.. code-block:: yaml
-
-   entities:
+    entities:
      - name: "telescope"
        quantities:
          - name: "optical_model"
@@ -208,7 +249,18 @@ Open a text editor and write the following YAML text:
 
 
 Now, you have to tell InstrumentDB to create these entities and quantities
-in the database.
+in the database. Run the following command::
+
+  poetry run manage.py importyaml tutorial.yaml
+
+If everything goes well, the structure of entities and quantities will be
+loaded from the YAML file and used to provide a structure to the database.
+
+Run the webserver with the following command::
+
+  poetry run manage.py runserver
+
+and go to page https://127.0.0.1:8000/.
 
 .. _tut-upload-data-files:
 
