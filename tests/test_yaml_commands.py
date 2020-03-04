@@ -6,23 +6,53 @@ from django.test import TestCase
 from browse.models import Entity, FormatSpecification, Quantity, DataFile, Release
 
 
+def check_db_size(
+    test, entity_len, format_spec_len, quantity_len, data_file_len, release_len
+):
+    test.assertEqual(len(Entity.objects.all()), entity_len)
+    test.assertEqual(len(FormatSpecification.objects.all()), format_spec_len)
+    test.assertEqual(len(Quantity.objects.all()), quantity_len)
+    test.assertEqual(len(DataFile.objects.all()), data_file_len)
+    test.assertEqual(len(Release.objects.all()), release_len)
+
+
 class TestNestedYamlIO(TestCase):
     def test_import_nested_yaml(self):
         input_file = Path(__file__).parent / ".." / "examples" / "schema1.yaml"
         call_command("importyaml", input_file)
-        self.assertEqual(len(Entity.objects.all()), 12)
-        self.assertEqual(len(FormatSpecification.objects.all()), 3)
-        self.assertEqual(len(Quantity.objects.all()), 12)
-        self.assertEqual(len(DataFile.objects.all()), 3)
-        self.assertEqual(len(Release.objects.all()), 1)
+        check_db_size(
+            self,
+            entity_len=12,
+            format_spec_len=3,
+            quantity_len=12,
+            data_file_len=3,
+            release_len=1,
+        )
 
 
 class TestPlainYamlIO(TestCase):
     def test_import_plain_yaml(self):
         input_file = Path(__file__).parent / ".." / "examples" / "schema2.yaml"
         call_command("importyaml", input_file)
-        self.assertEqual(len(Entity.objects.all()), 12)
-        self.assertEqual(len(FormatSpecification.objects.all()), 3)
-        self.assertEqual(len(Quantity.objects.all()), 12)
-        self.assertEqual(len(DataFile.objects.all()), 3)
-        self.assertEqual(len(Release.objects.all()), 1)
+        check_db_size(
+            self,
+            entity_len=12,
+            format_spec_len=3,
+            quantity_len=12,
+            data_file_len=3,
+            release_len=1,
+        )
+
+
+class TestTutorial(TestCase):
+    def test_import_tutorial(self):
+        input_file = Path(__file__).parent / ".." / "examples" / "tutorial.yaml"
+        call_command("importyaml", input_file)
+        check_db_size(
+            self,
+            entity_len=6,
+            format_spec_len=6,
+            quantity_len=9,
+            data_file_len=0,
+            release_len=0,
+        )
