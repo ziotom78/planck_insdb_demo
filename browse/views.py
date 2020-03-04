@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import mimetypes
 from pathlib import Path
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -7,11 +8,11 @@ from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.models import User, Group
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from rest_framework import viewsets
 
-from browse.models import Entity, Quantity, DataFile, FormatSpecification
+from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 from browse.serializers import (
     UserSerializer,
     GroupSerializer,
@@ -20,6 +21,8 @@ from browse.serializers import (
     QuantitySerializer,
     DataFileSerializer,
 )
+
+mimetypes.init()
 
 ###########################################################################
 
@@ -103,8 +106,10 @@ class DataFilePlotDownloadView(View):
         plot_file_data.open()
         data = plot_file_data.read()
         resp = HttpResponse(data, content_type=cur_object.plot_mime_type)
-        resp["Content-Disposition"] = 'attachment; filename="{0}"'.format(
-            Path(cur_object.name).name
+
+        resp["Content-Disposition"] = 'attachment; filename="{name}{ext}"'.format(
+            name=Path(cur_object.name).name,
+            ext=mimetypes.guess_extension(cur_object.plot_mime_type),
         )
         return resp
 
@@ -141,3 +146,47 @@ class QuantityViewSet(viewsets.ModelViewSet):
 class DataFileViewSet(viewsets.ModelViewSet):
     queryset = DataFile.objects.all()
     serializer_class = DataFileSerializer
+
+
+################################################################################
+
+
+def release_view(request, rel_name, reference, browse_view=False):
+    # If browse_view is True, redirect to browse/data_files/uuid
+    # If browse_view is False, redirect to api/data_files/uuid
+
+    release = get_object_or_404(Release, tag=rel_name)
+
+    # The "reference" here is the part of the URL that includes the
+    # list of entities and the quantity. For instance, if "reference"
+    # is "mft/detectors/det0a/noise_properties", this is the meaning
+    # of its parts:
+    #
+    #     mft / detectors / det0a / noise_properties
+    #     |---------------------|   |--------------|
+    #               ^                      ^
+    #               |                      |
+    #      sequence of entities         quantity
+
+    url_components = reference.split("/")
+    quantity_name = url_components[-1]
+
+    cur_queryset = get_object_or_404(Entity, name=url_components[0])
+    for comp in url_components[1:-1]:
+        cur_queryset = get_object_or_404(cur_queryset.get_children(), name=comp)
+
+    quantity = get_object_or_404(cur_queryset.quantities, name=quantity_name)
+    data_file = get_object_or_404(quantity.data_files, release_tag=release)
+
+    if browse_view:
+        return redirect("data-file-view", data_file.uuid)
+    else:
+        return redirect("datafile-detail", data_file.uuid)
+
+
+def api_release_view(request, rel_name, reference):
+    return release_view(request, rel_name, reference, browse_view=False)
+
+
+def browse_release_view(request, rel_name, reference):
+    return release_view(request, rel_name, reference, browse_view=True)
