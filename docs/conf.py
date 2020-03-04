@@ -24,6 +24,9 @@ author = "Maurizio Tomasi"
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
 
+# This is the default in Sphinx, but it must be specified for Readthedocs, see
+# https://github.com/readthedocs/readthedocs.org/issues/2569
+master_doc = "index"
 
 # -- General configuration ---------------------------------------------------
 
