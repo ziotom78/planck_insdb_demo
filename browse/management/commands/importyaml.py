@@ -28,9 +28,11 @@ class Command(BaseCommand):
                 self.stdout.write(spaces + f"Entity {cur_entity_name}")
 
             if not self.dry_run:
-                cur_entity = Entity.objects.create(
-                    uuid=uuid, name=cur_entity_name, parent=parent
-                )
+                cur_entity = Entity.objects.get(uuid=uuid)
+                if not (self.no_overwrite and cur_entity):
+                    cur_entity = Entity.objects.create(
+                        uuid=uuid, name=cur_entity_name, parent=parent
+                    )
             else:
                 cur_entity = cur_entity_name
 
@@ -46,8 +48,14 @@ class Command(BaseCommand):
 
     def create_format_specifications(self, specs):
         for spec_dict in specs:
-            uuid = spec_dict.get("uuid")
             document_ref = spec_dict.get("document_ref")
+            uuid = spec_dict.get("uuid")
+            if self.no_overwrite and FormatSpecification.objects.get(uuid=uuid):
+                self.stdout.write(
+                    f"Format specification {document_ref} already exists in the database"
+                )
+                continue
+
             uuid = spec_dict.get("uuid")
             doc_file_name = spec_dict.get("doc_file")
 
@@ -89,8 +97,10 @@ class Command(BaseCommand):
         for quantity_dict in quantities:
             name = quantity_dict.get("name")
             uuid = quantity_dict.get("uuid")
-
             if uuid:
+                if self.no_overwrite and Quantity.objects.get(uuid=uuid):
+                    self.stdout.write(f"Quantity {name} already exists in the database")
+                    continue
                 self.stdout.write(f"Quantity {name} ({uuid[0:6]})")
             else:
                 self.stdout.write(f"Quantity {name}")
@@ -134,6 +144,10 @@ class Command(BaseCommand):
         for data_file_dict in data_files:
             name = data_file_dict.get("name")
             uuid = data_file_dict.get("uuid")
+            if self.no_overwrite and DataFile.objects.get(uuid=uuid):
+                self.stdout.write(f"Data file {name} already exists in the database")
+                continue
+
             metadata = json.dumps(data_file_dict.get("metadata", {}))
             filename = data_file_dict.get("file_data")
             plot_filename = data_file_dict.get("plot_file")
@@ -206,6 +220,10 @@ class Command(BaseCommand):
     def create_releases(self, releases):
         for rel_dict in releases:
             tag = rel_dict.get("tag")
+            if self.no_overwrite and Release.objects.get(tag=tag):
+                self.stdout.write(f"Release {tag} already exists in the database")
+                continue
+
             comments = rel_dict.get("comments")
             data_files = rel_dict.get("data_files")
 
@@ -243,6 +261,11 @@ class Command(BaseCommand):
             help="Read the schema from a JSON file instead of a YAML file",
         )
         parser.add_argument(
+            "--no-overwrite",
+            action="store_true",
+            help="Do not overwrite existing objects in the database.",
+        )
+        parser.add_argument(
             "schema_file",
             nargs="+",
             help="""
@@ -256,6 +279,7 @@ etc.) will be looked in the directory where this file resides.
     def handle(self, *args, **options):
         self.dry_run = options["dry_run"]
         self.use_json = options["json"]
+        self.no_overwrite = options["no_overwrite"]
 
         for curfile in options["schema_file"]:
             schema_filename = Path(curfile)
