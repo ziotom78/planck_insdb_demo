@@ -65,14 +65,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/ziotom78/instrumentdb)
 
 
 ### Built With
 
 -   [Python 3](https://www.python.org/)
 -   [Django 3](https://www.djangoproject.com/) & [Django REST
-  framework](https://www.django-rest-framework.org/)
+  framework](https://www.django-rest-framework.org/) & [Django
+  MPTT](https://github.com/django-mptt/django-mptt)
 -   [SQLite](https://sqlite.org)
 
 
@@ -199,6 +200,6 @@ Project Link:
 [issues-url]: https://github.com/ziotom78/instrumentdb/issues
 [license-shield]: https://img.shields.io/github/license/ziotom78/instrumentdb.svg?style=flat-square
 [license-url]: https://github.com/ziotom78/instrumentdb/blob/master/LICENSE.md
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: images/instrumentdb-screenshot.png
 [docs-shield]: https://readthedocs.org/projects/instrumentdb/badge/?version=latest
 [docs-url]: https://instrumentdb.readthedocs.io/en/latest/?badge=latest
