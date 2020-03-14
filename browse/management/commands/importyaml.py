@@ -96,7 +96,14 @@ class Command(BaseCommand):
 
             if doc_file_name:
                 file_path = self.attachment_source_path / doc_file_name
-                fp = open(file_path, "rb")
+                try:
+                    fp = open(file_path, "rb")
+                except FileNotFoundError:
+                    file_path = (
+                        self.attachment_source_path / "format_spec" / doc_file_name
+                    )
+                    fp = open(file_path, "rb")
+
                 doc_file = File(fp, "rb")
             else:
                 file_path = "<no file>"
@@ -223,15 +230,27 @@ class Command(BaseCommand):
                 )
 
             if filename:
-                fp = open(self.attachment_source_path / filename)
-                file_data = File(fp, "r")
+                file_path = self.attachment_source_path / filename
+                try:
+                    fp = open(file_path, "rb")
+                except FileNotFoundError:
+                    file_path = self.attachment_source_path / "data_files" / filename
+                    fp = open(file_path, "rb")
+                file_data = File(fp, "rb")
             else:
                 fp = None
                 file_data = None
 
             if plot_filename:
-                plot_fp = open(self.attachment_source_path / plot_filename)
-                plot_file = File(fp, "r")
+                file_path = self.attachment_source_path / plot_filename
+                try:
+                    plot_fp = open(file_path, "rb")
+                except FileNotFoundError:
+                    file_path = (
+                        self.attachment_source_path / "plot_files" / plot_file_name
+                    )
+                    plot_fp = open(file_path, "rb")
+                plot_file = File(plot_fp, "rb")
             else:
                 plot_fp = None
                 plot_file = None
