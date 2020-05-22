@@ -270,14 +270,145 @@ Run the webserver with the following command::
 
   poetry run manage.py runserver
 
-and go to page https://127.0.0.1:8000/.
+and go to page http://127.0.0.1:8000/.
 
 .. _tut-upload-data-files:
 
 Upload data files
 -----------------
 
+There are two ways to upload data to the database:
+
+1. Use the «Admin» interface;
+2. Use the RESTful API.
+
+The «Admin» interface can be accessed at http://127.0.0.1:8000/admin/ using a
+web browser, and it requires authentication. The RESTful API is much more
+powerful, and it is perfect if you want to inject many objects in the database.
+
+Using the RESTful API from the command line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The RESTful API uses HTTP commands to create/modify/retrieve objects in the
+database, and it can be used either from the command line (using tools like
+``curl`` or `httpie <https://httpie.org/>`_) or programmatically. We'll show
+how to use `httpie` first.
+
+To create a new entity named ``foo``, install `httpie` and run the following
+command:
+
+.. code-block:: none
+
+  http POST http://127.0.0.1:8000/api/entities/ \
+      name=foo quantities:="[]"
+
+This is the way a RESTful API operates: you `post` an object to a URL, which
+in this case is http://127.0.0.1:8000/api/entities/. The real object must be
+described using a JSON record, but `httpie` has the handy feature to build 
+JSON records out of key/value pairs specified using the syntax
+``keyword=value`` (for textual fields) or ``keyword:="value"`` (for JSON
+objects, like the empty list ``[]`` or the Boolean values ``true`` and
+``false``).
+
+If the call to ``http`` is successful, you should see the following output:
+
+.. code-block:: none
+
+  HTTP/1.1 201 Created
+  Allow: GET, POST, HEAD, OPTIONS
+  Content-Length: 106
+  Content-Type: application/json
+  Server: WSGIServer/0.2 CPython/3.7.6
+  Vary: Accept
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  
+  {
+      "children": [],
+      "name": "foo",
+      "parent": null,
+      "quantities": [],
+      "uuid": "cb49c625-bd96-4027-99fd-91c3b8ff8a6b"
+  }
+
+Obviously, the field ``uuid`` will be different in your case. To create a
+children, you have to specify the UUID of the parent:
+
+.. code-block:: none
+
+  http POST http://127.0.0.1:8000/api/entities/ \
+      name:="bar" \
+      parent:="/api/entities/cb49c625-bd96-4027-99fd-91c3b8ff8a6b/" \
+      quantities:="[]"
+
+(Change the value of the ``parent`` key to use the UUID printed before, and
+be sure to remember the end slash!)
+
+Uploading stuff using Python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The same commands used in the previous paragraphs can be used in programs, of
+course: it is enough for your programming environment to have a HTTP library.
+
+Let's see how to create objects in the database using Python. In this example
+we create the same object structure as the one above::
+
+  import requests as req
+
+  # Create a new entity in the database
+  response = req.post(
+      url="http://127.0.0.1:8000/api/entities/",
+      data={ "name": "foo_python", "parent": None },
+  )
+
+  # Ensure that the request was completed
+  assert response.ok
+
+  uuid = response.json()["uuid"]
+
+  print("Object created, UUID is ", uuid)
+
+  # Create another entity in the database,
+  # which is a child of the one above
+  response = req.post(
+      url="http://127.0.0.1:8000/api/entities/",
+      data={ 
+          "name": "bar_python",
+          "parent": f"http://127.0.0.1:8000/api/entities/{uuid}/",
+      },
+  )
+
+  assert response.ok
+
+
 .. _tut-accessing-the-database:
 
 Accessing the database
 ----------------------
+
+Accessing the objects in the database can be done using the web interface at
+http://127.0.0.1:8000/. However, there are other ways to do this, and they are
+the same we explored above when we uploaded objects in the database: the
+«Admin» interface and the RESTful API. Here we concentrate on the latter.
+
+To have a glimpse of all the objects of some kind in a database, you can
+use tools like ``curl`` or `httpie` to read from the following URLS:
+
+- http://127.0.0.1:8000/api/format_specs/
+- http://127.0.0.1:8000/api/entities/
+- http://127.0.0.1:8000/api/quantities/
+- http://127.0.0.1:8000/api/data_files/
+
+(Tip: you can open these URLS using a web browser, and a nice textual
+(representation of the records will be rendered on the screen.)
+
+To access a specific object, just append the UUID and a trailing slash (don't
+forget this!):
+
+.. code-block:: none
+
+  curl http://127.0.0.1:8000/api/entities/cb49c625-bd96-4027-99fd-91c3b8ff8a6b/
+
+Of course, the same URLs can be used in programs, like the Python script
+that imported ``requests`` in the above paragraphs. The possibilities are
+endless!

@@ -85,9 +85,13 @@ WSGI_APPLICATION = "instrumentdb.wsgi.application"
 # REST API
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
+    ),
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-    ]
+        # TODO: implement some way to limit access!
+        'rest_framework.permissions.AllowAny',
+    ],
 }
 
 # Database
