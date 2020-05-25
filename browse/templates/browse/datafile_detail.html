@@ -44,9 +44,21 @@
   </ul>
 </div>
 
+{% if object.metadata %}
+<div class="row">
+  <pre>
+    {% autoescape on %}
+    {{ object.metadata }}
+    {% endautoescape %}
+  </pre>
+</div>
+{% endif %}
+
+{% if object.file_data %}
 <div class="row justify-content-end">
   <a class="btn btn-primary" href="{% url 'data-file-download-view' object.uuid %}">Download ({{ object.file_data.size|filesizeformat }})</a>
 </div>
+{% endif %}
 
 {% if object.dependencies.all %}
 <h2>Dependencies</h2>
