@@ -28,7 +28,7 @@
   {% for cur_obj in object.data_files.all %}
   <tr>
     <td><a href="{% url 'data-file-view' cur_obj.uuid %}">{{ cur_obj.name }}</a></td>
-    <td>{{ cur_obj.file_data.size|filesizeformat }}</td>
+    <td>{% if cur_obj.file_data %}{{ cur_obj.file_data.size|filesizeformat }}{% else %}N/A{% endif %}</td>
     <td>{{ cur_obj.upload_date|date }}, {{ cur_obj.upload_date|time }}</td>
     <td>{{ cur_obj.uuid }}</td>
   </tr>
