@@ -90,7 +90,7 @@ class Command(BaseCommand):
 
         """
         abs_path = self.output_folder / relative_path
-        abs_path.parent.mkdir(parents=True, exist_ok=self.exist_ok)
+        abs_path.parent.mkdir(parents=True, exist_ok=True)
 
         with file_data.open("rb") as inpf, abs_path.open("wb") as outf:
             while True:
