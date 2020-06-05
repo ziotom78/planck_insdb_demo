@@ -105,7 +105,7 @@ def django_sqlite(file_name):
     }
 
 
-DATABASES = {"default": env("SQLITE_DATABASE", postprocessor=django_sqlite)}
+DATABASES = {"default": env("DATABASE_URL", postprocessor=django_sqlite)}
 
 
 # Password validation
