@@ -7,7 +7,7 @@ import yaml
 
 from django.core.files import File
 from django.utils.dateparse import parse_datetime
-from django.utils.timezone import make_aware
+from django.utils.timezone import is_aware, make_aware
 from django.core.management.base import BaseCommand, CommandError
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 
@@ -216,12 +216,13 @@ class Command(BaseCommand):
             dependencies = data_file_dict.get("dependencies", [])
 
             try:
-                upload_date = make_aware(
-                    parse_datetime(data_file_dict.get("upload_date"))
-                )
-            except ValueError:
+                upload_date = parse_datetime(data_file_dict.get("upload_date"))
+
+                if not is_aware(upload_date):
+                    upload_date = make_aware(upload_date)
+            except ValueError as exc:
                 raise CommandError(
-                    f"invalid upload date for data file {name} ({uuid[0:6]})"
+                    f"invalid upload date for data file {name} ({uuid[0:6]}): {exc}"
                 )
 
             if not upload_date:
