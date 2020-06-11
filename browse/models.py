@@ -290,7 +290,7 @@ class DataFile(models.Model):
     )
     metadata = models.TextField(
         "JSON-formatted metadata",
-        max_length=8192,
+        max_length=32768,
         blank=True,
         help_text="JSON record containing metadata for the file",
     )
