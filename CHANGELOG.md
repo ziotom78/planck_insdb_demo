@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 0.2.0
+
 -   Make JSON the default format when importing/exporting the database [PR#28](https://github.com/ziotom78/instrumentdb/pull/28)
 
 -   Format JSON records and highlight their syntax using [Highlight.js](https://highlightjs.org/) ([PR#27](https://github.com/ziotom78/instrumentdb/pull/27))
