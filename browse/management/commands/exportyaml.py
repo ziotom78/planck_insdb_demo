@@ -103,7 +103,7 @@ class Command(BaseCommand):
         result = []
         for cur_entity in entities:
             # We use a OrderedDict here because otherwise "children" would
-            # be the first key in the YAML file, and this would make the
+            # be the first key in the JSON file, and this would make the
             # file harder to read
             new_element = OrderedDict(
                 [("uuid", Quoted(cur_entity.uuid)), ("name", Quoted(cur_entity.name))]
@@ -263,13 +263,14 @@ class Command(BaseCommand):
         parser.add_argument(
             "--no-attachments",
             action="store_true",
-            help="Do not save data files, only the YAML file",
+            help="Do not save data files, only the JSON file",
         )
         parser.add_argument(
             "--json",
+            default=True,
             action="store_true",
-            help="Use JSON instead of YAML as the format of the file "
-            "containing the schema",
+            help="Use JSON as the format of the file containing the schema "
+            "(always true)",
         )
         parser.add_argument(
             "--force",
