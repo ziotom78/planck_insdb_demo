@@ -37,7 +37,7 @@ def build_query_from_uuid_or_name(key, name_field="name"):
 
 
 class Command(BaseCommand):
-    help = "Load records into the database from a YAML file"
+    help = "Load records into the database from a JSON file"
     output_transaction = True
     requires_migrations_checks = True
 
@@ -337,9 +337,7 @@ class Command(BaseCommand):
             help="Do not execute any action on the database (useful for testing)",
         )
         parser.add_argument(
-            "--json",
-            action="store_true",
-            help="Read the schema from a JSON file instead of a YAML file",
+            "--json", action="store_true", help="Unused",
         )
         parser.add_argument(
             "--no-overwrite",
@@ -366,14 +364,14 @@ etc.) will be looked in the directory where this file resides.
             schema_filename = Path(curfile)
 
             # Retrieve every attachment from the same path where the
-            # YAML file is
+            # JSON file is
             self.attachment_source_path = schema_filename.parent
 
-            with open(schema_filename, "rt") as inpf:
-                if self.use_json:
-                    schema = json.load(inpf)
-                else:
+            with schema_filename.open("rt") as inpf:
+                if schema_filename.suffix == ".yaml":
                     schema = yaml.safe_load(inpf)
+                else:
+                    schema = json.load(inpf)
 
             self.create_format_specifications(schema.get("format_specifications", []))
             self.create_entities(schema.get("entities", []))

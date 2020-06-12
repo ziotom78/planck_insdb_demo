@@ -254,10 +254,10 @@ class Command(BaseCommand):
         )
 
         with output_file_path.open("w") as outf:
-            if self.use_json:
-                json.dump(schema, outf, indent=2)
-            else:
+            if self.output_file_path.suffix == ".yaml":
                 yaml_saner_dump(schema, stream=outf)
+            else:
+                json.dump(schema, outf, indent=2)
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -271,6 +271,12 @@ class Command(BaseCommand):
             action="store_true",
             help="Use JSON as the format of the file containing the schema "
             "(always true)",
+        )
+        parser.add_argument(
+            "--yaml",
+            action="store_true",
+            help="Save a copy of the schema using the YAML format (useful "
+            "for legacy codes)",
         )
         parser.add_argument(
             "--force",
@@ -294,9 +300,12 @@ If the folder does not exist, it will be created.""",
         # Create the output directory
         self.output_folder.mkdir(parents=True, exist_ok=self.exist_ok)
 
+        extensions = []
         if self.use_json:
-            ext = "json"
-        else:
-            ext = "yaml"
+            extensions.append("json")
 
-        self.save_schema(self.output_folder / f"schema.{ext}")
+        if self.use_yaml:
+            extensions.append("yaml")
+
+        for cur_ext in extensions:
+            self.save_schema(self.output_folder / f"schema.{cur_ext}")
