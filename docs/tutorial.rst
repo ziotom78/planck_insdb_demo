@@ -171,6 +171,11 @@ Open a text editor and write the following YAML text:
         doc_file: "tutorial_bandshapes.pdf"
 
 Save this into a file named :file:`tutorial.yaml`.
+        
+(Note: JSON is much faster to load than YAML, and it should be
+preferred. We are using YAML here because it looks cleaner to read.
+InstrumentDB transparently supports both JSON and YAML.)
+
 
 Organization of entities and quantities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -203,11 +208,12 @@ In our example, we might think of the following structure for our entities:
 
     - Bandshape response (quantity)
 
-The safest way to define the structure of entities is through a YAML file.
-InstrumentDB has the ability to read a YAML file and populate the database
-with its contents. Users have still the possibility to manually create
-each entity and quantity using the web interface, but for deeply-nested
-structures like the one above, it is better to go through a text file.
+The safest way to define the structure of entities is through a YAML
+file. InstrumentDB has the ability to read a YAML/JSON file and
+populate the database with its contents. Users have still the
+possibility to manually create each entity and quantity using the web
+interface, but for deeply-nested structures like the one above, it is
+better to go through a text file.
 
 Append the following text at the bottom of file :file:`tutorial.yaml`:
 
@@ -255,7 +261,7 @@ files containing the specification documents (e.g.,
 :file:`tutorial.yaml` that is contained in the :file:`examples`
 directory. Run the following command::
 
-  poetry run manage.py importyaml examples/tutorial.yaml
+  poetry run manage.py import examples/tutorial.yaml
 
 .. warning::
 

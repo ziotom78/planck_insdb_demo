@@ -103,7 +103,7 @@ class Command(BaseCommand):
         result = []
         for cur_entity in entities:
             # We use a OrderedDict here because otherwise "children" would
-            # be the first key in the YAML file, and this would make the
+            # be the first key in the JSON file, and this would make the
             # file harder to read
             new_element = OrderedDict(
                 [("uuid", Quoted(cur_entity.uuid)), ("name", Quoted(cur_entity.name))]
@@ -254,22 +254,29 @@ class Command(BaseCommand):
         )
 
         with output_file_path.open("w") as outf:
-            if self.use_json:
-                json.dump(schema, outf, indent=2)
-            else:
+            if self.output_file_path.suffix == ".yaml":
                 yaml_saner_dump(schema, stream=outf)
+            else:
+                json.dump(schema, outf, indent=2)
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--no-attachments",
             action="store_true",
-            help="Do not save data files, only the YAML file",
+            help="Do not save data files, only the JSON file",
         )
         parser.add_argument(
             "--json",
+            default=True,
             action="store_true",
-            help="Use JSON instead of YAML as the format of the file "
-            "containing the schema",
+            help="Use JSON as the format of the file containing the schema "
+            "(always true)",
+        )
+        parser.add_argument(
+            "--yaml",
+            action="store_true",
+            help="Save a copy of the schema using the YAML format (useful "
+            "for legacy codes)",
         )
         parser.add_argument(
             "--force",
@@ -293,9 +300,12 @@ If the folder does not exist, it will be created.""",
         # Create the output directory
         self.output_folder.mkdir(parents=True, exist_ok=self.exist_ok)
 
+        extensions = []
         if self.use_json:
-            ext = "json"
-        else:
-            ext = "yaml"
+            extensions.append("json")
 
-        self.save_schema(self.output_folder / f"schema.{ext}")
+        if self.use_yaml:
+            extensions.append("yaml")
+
+        for cur_ext in extensions:
+            self.save_schema(self.output_folder / f"schema.{cur_ext}")

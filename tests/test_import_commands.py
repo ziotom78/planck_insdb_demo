@@ -21,7 +21,7 @@ class TestNestedYamlIO(TestCase):
         input_file = Path(__file__).parent / ".." / "examples" / "schema1.yaml"
 
         # Test a dry run
-        call_command("importyaml", "--dry-run", input_file)
+        call_command("import", "--dry-run", input_file)
         check_db_size(
             self,
             entity_len=0,
@@ -32,7 +32,7 @@ class TestNestedYamlIO(TestCase):
         )
 
         # Test a normal import
-        call_command("importyaml", input_file)
+        call_command("import", input_file)
         check_db_size(
             self,
             entity_len=12,
@@ -43,7 +43,7 @@ class TestNestedYamlIO(TestCase):
         )
 
         # Test that --no-overwrite works
-        call_command("importyaml", "--no-overwrite", input_file)
+        call_command("import", "--no-overwrite", input_file)
         check_db_size(
             self,
             entity_len=12,
@@ -57,7 +57,7 @@ class TestNestedYamlIO(TestCase):
 class TestPlainYamlIO(TestCase):
     def test_import_plain_yaml(self):
         input_file = Path(__file__).parent / ".." / "examples" / "schema2.yaml"
-        call_command("importyaml", input_file)
+        call_command("import", input_file)
         check_db_size(
             self,
             entity_len=12,
@@ -71,7 +71,7 @@ class TestPlainYamlIO(TestCase):
 class TestTutorial(TestCase):
     def test_import_tutorial(self):
         input_file = Path(__file__).parent / ".." / "examples" / "tutorial.yaml"
-        call_command("importyaml", input_file)
+        call_command("import", input_file)
         check_db_size(
             self,
             entity_len=6,
