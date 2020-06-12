@@ -1,5 +1,7 @@
 {% extends "browse/base_generic.html" %}
 
+{% load customfilters %}
+
 {% block title %}{{ object.name }}{% endblock %}
 
 {% block body %}
@@ -47,9 +49,11 @@
 {% if object.metadata %}
 <div class="row">
   <pre>
-    {% autoescape on %}
-    {{ object.metadata }}
-    {% endautoescape %}
+    <code class="json">
+{% autoescape on %}
+{{ object.metadata|format_json }}
+{% endautoescape %}
+    </code>
   </pre>
 </div>
 {% endif %}
