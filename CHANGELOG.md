@@ -1,5 +1,7 @@
 # HEAD
 
+-   Fix bug [#29](https://github.com/ziotom78/instrumentdb/issues/29)
+
 # Version 0.2.0
 
 -   Make JSON the default format when importing/exporting the database [PR#28](https://github.com/ziotom78/instrumentdb/pull/28)

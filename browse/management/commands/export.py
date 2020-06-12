@@ -254,7 +254,7 @@ class Command(BaseCommand):
         )
 
         with output_file_path.open("w") as outf:
-            if self.output_file_path.suffix == ".yaml":
+            if output_file_path.suffix == ".yaml":
                 yaml_saner_dump(schema, stream=outf)
             else:
                 json.dump(schema, outf, indent=2)
@@ -295,6 +295,7 @@ If the folder does not exist, it will be created.""",
         self.no_attachments = options["no_attachments"]
         self.exist_ok = options["force"]
         self.use_json = options["json"]
+        self.use_yaml = options["yaml"]
         self.output_folder = Path(options["output_path"])
 
         # Create the output directory
