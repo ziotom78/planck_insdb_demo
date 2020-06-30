@@ -166,7 +166,11 @@ Let's see each of the three approaches. The first one is the simplest::
       "data_files": data_files,
   })
 
-Assuming that a release was already created, you can use ``PATCH`` commands to modify the list of data files belonging to the release::
+Let's now consider the case where you did not pass the ``data_files``
+key in the POST command above. (For instance, you were still building
+the list of data files.) Assuming that a release was already created,
+you can use ``PATCH`` commands to modify the release object, as shown
+in this snippet::
 
   # We are re-using the "req" object got in the snippet above through
   # the call to `requests.post`
@@ -184,8 +188,9 @@ Assuming that a release was already created, you can use ``PATCH`` commands to m
       "data_files": data_files,
   })
   
-Finally, we can go through the opposite route and add the release tag
-to every data file in the list ``data_files``::
+Alternatively, we can go through the opposite route and add the
+release tag to every data file in the list ``data_files``. The
+following snippet is equivalent to the code above::
 
   for cur_data_file_url in data_files:
       # Retrieve the current data file
