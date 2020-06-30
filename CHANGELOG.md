@@ -1,6 +1,9 @@
 # HEAD
 
+# Version 0.3.0
+
 -   Fix bug [#29](https://github.com/ziotom78/instrumentdb/issues/29)
+-   Implement API to access releases [#30](https://github.com/ziotom78/instrumentdb/pull/30)
 
 # Version 0.2.0
 
