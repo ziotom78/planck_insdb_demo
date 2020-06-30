@@ -13,7 +13,9 @@ Welcome to InstrumentDB's documentation!
    introduction
    installation
    tutorial
-
+   releases
+   webapi
+   
 Indices and tables
 ==================
 

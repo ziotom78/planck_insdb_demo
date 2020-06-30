@@ -404,6 +404,7 @@ use tools like ``curl`` or `httpie` to read from the following URLS:
 - http://127.0.0.1:8000/api/entities/
 - http://127.0.0.1:8000/api/quantities/
 - http://127.0.0.1:8000/api/data_files/
+- http://127.0.0.1:8000/api/releases/
 
 (Tip: you can open these URLS using a web browser, and a nice textual
 (representation of the records will be rendered on the screen.)
