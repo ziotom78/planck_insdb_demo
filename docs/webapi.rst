@@ -163,6 +163,7 @@ Let's see each of the three approaches. The first one is the simplest::
   req = requests.post(server + "api/releases/", data={
       "tag": release_name,
       "comment": "dummy release",
+      "data_files": data_files,
   })
 
 Assuming that a release was already created, you can use ``PATCH`` commands to modify the list of data files belonging to the release::
