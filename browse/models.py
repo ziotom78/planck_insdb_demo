@@ -334,9 +334,11 @@ class DataFile(models.Model):
     )
 
     # This points to a release. It is used only for data files that
-    # belong to official releases of an Instrument Database
-    release_tag = models.ForeignKey(
-        "Release", models.SET_NULL, blank=True, null=True, related_name="data_files"
+    # belong to official releases of an Instrument Database. We use a
+    # many-to-many relationship, as a data file might be part of
+    # several data releases (if it was never updated as time passed).
+    release_tags = models.ManyToManyField(
+        "Release", blank=True, related_name="data_files"
     )
 
     comment = models.TextField(max_length=4096, blank=True, help_text="Free-form notes")

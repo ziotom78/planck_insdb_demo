@@ -5,7 +5,7 @@ import json
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User, Group
-from browse.models import Entity, Quantity, DataFile, FormatSpecification
+from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -81,6 +81,10 @@ class QuantitySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DataFileSerializer(serializers.HyperlinkedModelSerializer):
+    release_tags = serializers.HyperlinkedRelatedField(
+        view_name="release-detail", many=True, queryset=Release.objects.all(),
+    )
+
     class Meta:
         model = DataFile
         fields = [
@@ -93,6 +97,7 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
             "dependencies",
             "plot_mime_type",
             "comment",
+            "release_tags",
         ]
 
     def to_representation(self, instance):
@@ -112,3 +117,19 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         return representation
+
+
+class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
+    data_files = serializers.HyperlinkedRelatedField(
+        view_name="datafile-detail", many=True, queryset=DataFile.objects.all(),
+    )
+
+    class Meta:
+        model = Release
+        fields = [
+            "tag",
+            "rel_date",
+            "comments",
+            "data_files",
+        ]
+        ordering = ["-rel_date"]

@@ -27,12 +27,15 @@ from browse.views import (
     FormatSpecificationListView,
     FormatSpecificationDownloadView,
     QuantityView,
+    ReleaseListView,
+    ReleaseView,
     UserViewSet,
     GroupViewSet,
     FormatSpecificationViewSet,
     EntityViewSet,
     QuantityViewSet,
     DataFileViewSet,
+    ReleaseViewSet,
     api_release_view,
     browse_release_view,
 )
@@ -46,6 +49,7 @@ router.register(r"format_specs", FormatSpecificationViewSet)
 router.register(r"entities", EntityViewSet)
 router.register(r"quantities", QuantityViewSet)
 router.register(r"data_files", DataFileViewSet)
+router.register(r"releases", ReleaseViewSet)
 
 urlpatterns = [
     path("", entity_tree_view, name="entity-list-view"),
@@ -65,6 +69,8 @@ urlpatterns = [
     ),
     path("browse/entities/<pk>/", EntityView.as_view(), name="entity-view"),
     path("browse/quantities/<pk>/", QuantityView.as_view(), name="quantity-view"),
+    path("browse/releases/", ReleaseListView.as_view(), name="release-list-view"),
+    path("browse/releases/<pk>/", ReleaseView.as_view(), name="release-view"),
     path(
         "browse/format_specs/",
         FormatSpecificationListView.as_view(),
