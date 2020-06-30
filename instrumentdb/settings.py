@@ -90,8 +90,10 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         # TODO: implement some way to limit access!
-        'rest_framework.permissions.AllowAny',
+        "rest_framework.permissions.AllowAny",
     ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 25,
 }
 
 # Database

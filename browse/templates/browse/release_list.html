@@ -1,0 +1,18 @@
+{% extends "browse/base_generic.html" %}
+{% block title %}Releases{% endblock %}
+
+{% block body %}
+
+<h1>Releases</h1>
+
+<div class="list-group">
+  <ul class="list-group list-group-flush">
+    {% for obj in object_list %}
+    <li class="list-group-item">
+        <a href="{% url 'release-view' obj.tag %}">{{obj.tag}} ({{obj.rel_date}})</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

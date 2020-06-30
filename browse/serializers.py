@@ -5,7 +5,7 @@ import json
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User, Group
-from browse.models import Entity, Quantity, DataFile, FormatSpecification
+from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,10 +21,15 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FormatSpecificationSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="formatspecification-detail", read_only=True
+    )
+
     class Meta:
         model = FormatSpecification
         fields = [
             "uuid",
+            "url",
             "document_ref",
             "title",
             "doc_file_name",
@@ -56,11 +61,15 @@ class SubEntitySerializer(serializers.ModelSerializer):
 
 class EntitySerializer(serializers.HyperlinkedModelSerializer):
     children = SubEntitySerializer(many=True, required=False)
+    url = serializers.HyperlinkedIdentityField(
+        view_name="entity-detail", read_only=True
+    )
 
     class Meta:
         model = Entity
         fields = [
             "uuid",
+            "url",
             "name",
             "parent",
             "children",
@@ -69,10 +78,15 @@ class EntitySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class QuantitySerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="quantity-detail", read_only=True
+    )
+
     class Meta:
         model = Quantity
         fields = [
             "uuid",
+            "url",
             "name",
             "format_spec",
             "parent_entity",
@@ -81,10 +95,18 @@ class QuantitySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DataFileSerializer(serializers.HyperlinkedModelSerializer):
+    release_tags = serializers.HyperlinkedRelatedField(
+        view_name="release-detail", many=True, queryset=Release.objects.all(),
+    )
+    url = serializers.HyperlinkedIdentityField(
+        view_name="datafile-detail", read_only=True
+    )
+
     class Meta:
         model = DataFile
         fields = [
             "uuid",
+            "url",
             "name",
             "upload_date",
             "metadata",
@@ -93,6 +115,7 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
             "dependencies",
             "plot_mime_type",
             "comment",
+            "release_tags",
         ]
 
     def to_representation(self, instance):
@@ -112,3 +135,30 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         return representation
+
+    def to_internal_value(self, data):
+        value = super(DataFileSerializer, self).to_internal_value(data)
+
+        value["metadata"] = json.dumps(data, indent=2)
+
+        return value
+
+
+class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
+    data_files = serializers.HyperlinkedRelatedField(
+        view_name="datafile-detail", many=True, queryset=DataFile.objects.all(),
+    )
+    url = serializers.HyperlinkedIdentityField(
+        view_name="release-detail", read_only=True
+    )
+
+    class Meta:
+        model = Release
+        fields = [
+            "tag",
+            "url",
+            "rel_date",
+            "comments",
+            "data_files",
+        ]
+        ordering = ["-rel_date"]

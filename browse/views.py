@@ -20,6 +20,7 @@ from browse.serializers import (
     EntitySerializer,
     QuantitySerializer,
     DataFileSerializer,
+    ReleaseSerializer,
 )
 
 mimetypes.init()
@@ -114,6 +115,17 @@ class DataFilePlotDownloadView(View):
         return resp
 
 
+###########################################################################
+
+
+class ReleaseListView(ListView):
+    model = Release
+
+
+class ReleaseView(DetailView):
+    model = Release
+
+
 ################################################################################
 # REST API
 
@@ -148,6 +160,14 @@ class DataFileViewSet(viewsets.ModelViewSet):
     serializer_class = DataFileSerializer
 
 
+class ReleaseViewSet(viewsets.ModelViewSet):
+    # Enable dots to be used in release tag names. See
+    # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
+    lookup_value_regex = "[\w.]+"
+    queryset = Release.objects.all()
+    serializer_class = ReleaseSerializer
+
+
 ################################################################################
 
 
@@ -176,7 +196,7 @@ def release_view(request, rel_name, reference, browse_view=False):
         cur_queryset = get_object_or_404(cur_queryset.get_children(), name=comp)
 
     quantity = get_object_or_404(cur_queryset.quantities, name=quantity_name)
-    data_file = get_object_or_404(quantity.data_files, release_tag=release)
+    data_file = get_object_or_404(quantity.data_files, release_tags__tag=release)
 
     if browse_view:
         return redirect("data-file-view", data_file.uuid)
