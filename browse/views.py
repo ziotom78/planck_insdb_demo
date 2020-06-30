@@ -196,7 +196,7 @@ def release_view(request, rel_name, reference, browse_view=False):
         cur_queryset = get_object_or_404(cur_queryset.get_children(), name=comp)
 
     quantity = get_object_or_404(cur_queryset.quantities, name=quantity_name)
-    data_file = get_object_or_404(quantity.data_files, release_tags__tag=release)
+    data_file = get_object_or_404(quantity.data_files, release_tags__tag=release.tag)
 
     if browse_view:
         return redirect("data-file-view", data_file.uuid)
