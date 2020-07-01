@@ -207,7 +207,7 @@ class Command(BaseCommand):
                 [
                     ("tag", Quoted(cur_release.tag)),
                     ("release_date", Quoted(cur_release.rel_date)),
-                    ("comments", Quoted(cur_release.comments)),
+                    ("comment", Quoted(cur_release.comment)),
                     (
                         "data_files",
                         [Quoted(x.uuid) for x in cur_release.data_files.all()],

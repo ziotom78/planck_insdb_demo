@@ -35,8 +35,10 @@ dictionary containing the following fields:
 - ``name``: a string
 - ``parent``: the full URL to the parent entity; leave it out if the
   entity has no parent.
-- ``children``: a list of full URLS for the child entities; you can
+- ``children``: a list of full URLs for the child entities; you can
   leave it out.
+- ``quantities``: a list of full URLs for each quantity belonging to
+  this entity. Passing ``[]`` is ok.
 
 Here is an example in Python, it creates a new entity and then deletes
 it immediately after::
@@ -88,7 +90,8 @@ JSON record containing these keys:
 - ``name``: a string
 - ``format_spec``: the URL to a format specification object
 - ``parent_entity``: the URL to an entity
-
+- ``data_files``: a list of URLs for each data file. Passing ``[]`` is
+  ok.
 
 Data files
 ----------
@@ -106,11 +109,11 @@ JSON record containing these keys:
 - ``upload_date``: the date and time when the file was created. If not
   provided, the current date will be used.
 - ``metadata``: a JSON structure containing custom metadata associated
-  with the data file (optional).
+  with the data file.
 - ``quantity``: the URL to the quantity that owns this data file.
 - ``spec_version``: a custom string specifying which version of the
   specification document (associated with ``quantity``) was used to
-  produce this data file (optional).
+  produce this data file.
 - ``dependencies``: a list of URLs to data files that have been used
   to produce this very data file (optional).
 - ``plot_mime_type``: the MIME type of the plot associated with this
@@ -133,7 +136,7 @@ JSON record containing these keys:
   are letters, digits, the underscore and the dot.
 - ``rel_date``: the date when the release was created. If not
   specified, the current date is used.
-- ``comments``: a string containing any useful comment regarding this
+- ``comment``: a string containing any useful comment regarding this
   release (optional).
 - ``data_files``: a list of URLs containing the data files.
 

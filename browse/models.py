@@ -374,4 +374,4 @@ class Release(models.Model):
         help_text="Release date of the tag",
     )
 
-    comments = models.CharField(max_length=4096, blank=True, help_text="Free-form text")
+    comment = models.CharField(max_length=4096, blank=True, help_text="Free-form text")

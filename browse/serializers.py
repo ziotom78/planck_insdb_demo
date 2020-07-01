@@ -94,6 +94,25 @@ class QuantitySerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class JSONField(serializers.Field):
+    def to_representation(self, value):
+        if isinstance(value, str):
+            # Validate the JSON and discard the result of the conversion
+            result = json.loads(value)
+        else:
+            result = value
+
+        return result
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict):
+            result = json.dumps(data)
+        else:
+            result = data
+
+        return result
+
+
 class DataFileSerializer(serializers.HyperlinkedModelSerializer):
     release_tags = serializers.HyperlinkedRelatedField(
         view_name="release-detail", many=True, queryset=Release.objects.all(),
@@ -101,6 +120,7 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="datafile-detail", read_only=True
     )
+    metadata = JSONField()
 
     class Meta:
         model = DataFile
@@ -121,8 +141,6 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
         representation = super(DataFileSerializer, self).to_representation(instance)
 
-        # Convert the string containing the metadata into a proper Python dictionary
-        representation["metadata"] = json.loads(instance.metadata)
         representation["download_link"] = reverse(
             "data-file-download-view",
             kwargs={"pk": instance.uuid},
@@ -135,13 +153,6 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
         )
 
         return representation
-
-    def to_internal_value(self, data):
-        value = super(DataFileSerializer, self).to_internal_value(data)
-
-        value["metadata"] = json.dumps(data, indent=2)
-
-        return value
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -158,7 +169,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             "tag",
             "url",
             "rel_date",
-            "comments",
+            "comment",
             "data_files",
         ]
         ordering = ["-rel_date"]

@@ -124,7 +124,7 @@ entities:
 releases:
   - tag: 1.0
     release_date: "2020-02-01 14:03:12"
-    comments: "First official release of the instrument model"
+    comment: "First official release of the instrument model"
     data_files:
       - "a6dd07ee-9721-4453-abb1-e58aa53a9c01"
       - "37bb70e4-29b2-4657-ba0b-4ccefbc5ae36"
