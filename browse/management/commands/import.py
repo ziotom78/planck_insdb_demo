@@ -305,7 +305,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Release {tag} already exists in the database")
                 continue
 
-            comments = rel_dict.get("comments")
+            comment = rel_dict.get("comment")
             data_files = rel_dict.get("data_files")
 
             try:
@@ -322,7 +322,7 @@ class Command(BaseCommand):
 
             if not self.dry_run:
                 cur_release = Release.objects.create(
-                    tag=tag, rel_date=rel_date, comments=comments,
+                    tag=tag, rel_date=rel_date, comment=comment,
                 )
 
                 for cur_uuid in data_files:
