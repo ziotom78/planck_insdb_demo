@@ -56,8 +56,8 @@ class Command(BaseCommand):
             if not self.dry_run:
                 cur_entity = Entity.objects.filter(uuid=uuid)
                 if not (self.no_overwrite and cur_entity):
-                    cur_entity = Entity.objects.create(
-                        uuid=uuid, name=cur_entity_name, parent=parent
+                    (cur_entity, _) = Entity.objects.update_or_create(
+                        uuid=uuid, defaults={"name": cur_entity_name, "parent": parent,}
                     )
                 else:
                     cur_entity = cur_entity[0]
@@ -119,15 +119,21 @@ class Command(BaseCommand):
                     f'Format specification "{document_ref}" ({file_path})'
                 )
 
+            title = spec_dict.get("title", "")
+            doc_mime_type = spec_dict.get("doc_mime_type", "")
+            file_mime_type = spec_dict.get("file_mime_type", "")
+
             if not self.dry_run:
-                format_spec = FormatSpecification.objects.create(
+                (format_spec, _) = FormatSpecification.objects.update_or_create(
                     uuid=uuid,
-                    document_ref=document_ref,
-                    title=spec_dict.get("title", ""),
-                    doc_file=doc_file,
-                    doc_file_name=doc_file_name,
-                    doc_mime_type=spec_dict.get("doc_mime_type", ""),
-                    file_mime_type=spec_dict.get("file_mime_type", ""),
+                    defaults={
+                        "document_ref": document_ref,
+                        "title": title,
+                        "doc_file": doc_file,
+                        "doc_file_name": doc_file_name,
+                        "doc_mime_type": doc_mime_type,
+                        "file_mime_type": file_mime_type,
+                    },
                 )
 
                 format_spec.save()
@@ -183,11 +189,13 @@ class Command(BaseCommand):
                         f"for quantity {name} ({uuid[0:6]}) does not exist"
                     )
 
-            quantity = Quantity.objects.create(
+            (quantity, _) = Quantity.objects.update_or_create(
                 uuid=uuid,
-                name=name,
-                format_spec=format_spec,
-                parent_entity=parent_entity,
+                defaults={
+                    "name": name,
+                    "format_spec": format_spec,
+                    "parent_entity": parent_entity,
+                },
             )
 
             if "data_files" in quantity_dict:
@@ -275,16 +283,18 @@ class Command(BaseCommand):
                 parent_uuid = data_file_dict.get("quantity", "")
                 parent_quantity = Quantity.objects.get(uuid=parent_uuid)
 
-            cur_data_file = DataFile.objects.create(
+            (cur_data_file, _) = DataFile.objects.update_or_create(
                 uuid=uuid,
-                name=name,
-                upload_date=upload_date,
-                metadata=metadata,
-                file_data=file_data,
-                quantity=parent_quantity,
-                spec_version=data_file_dict.get("spec_version"),
-                plot_file=plot_file,
-                plot_mime_type=data_file_dict.get("plot_mime_type"),
+                defaults={
+                    "name": name,
+                    "upload_date": upload_date,
+                    "metadata": metadata,
+                    "file_data": file_data,
+                    "quantity": parent_quantity,
+                    "spec_version": data_file_dict.get("spec_version"),
+                    "plot_file": plot_file,
+                    "plot_mime_type": data_file_dict.get("plot_mime_type"),
+                },
             )
 
             for cur_dep in dependencies:
@@ -309,9 +319,12 @@ class Command(BaseCommand):
             data_files = rel_dict.get("data_files")
 
             try:
-                rel_date = make_aware(parse_datetime(rel_dict.get("release_date")))
-            except ValueError:
-                raise CommandError(f"invalid date for release {tag}")
+                rel_date = parse_datetime(rel_dict.get("release_date"))
+            except ValueError as err:
+                raise CommandError(f"invalid date for release {tag}: {err}")
+
+            if not rel_date.tzinfo:
+                rel_date = make_aware(rel_date)
 
             if not rel_date:
                 raise CommandError(f"no date specified for release {tag}")
@@ -321,8 +334,8 @@ class Command(BaseCommand):
             )
 
             if not self.dry_run:
-                cur_release = Release.objects.create(
-                    tag=tag, rel_date=rel_date, comment=comment,
+                (cur_release, _) = Release.objects.update_or_create(
+                    tag=tag, defaults={"rel_date": rel_date, "comment": comment},
                 )
 
                 for cur_uuid in data_files:
