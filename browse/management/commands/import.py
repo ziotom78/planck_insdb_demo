@@ -157,16 +157,14 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(spaces(nest_level) + f"Quantity {name}")
 
-            if self.dry_run:
-                continue
-
-            if not parent_entity:
+            entity = parent_entity
+            if not entity:
                 parent_uuid = quantity_dict.get("entity")
                 if not parent_uuid:
                     raise CommandError(f"expected entity for quantity {name}")
 
                 try:
-                    parent_entity = Entity.objects.get(uuid=parent_uuid)
+                    entity = Entity.objects.get(uuid=parent_uuid)
 
                 except Entity.DoesNotExist:
                     raise CommandError(
@@ -189,12 +187,15 @@ class Command(BaseCommand):
                         f"for quantity {name} ({uuid[0:6]}) does not exist"
                     )
 
+            if self.dry_run:
+                continue
+
             (quantity, _) = Quantity.objects.update_or_create(
                 uuid=uuid,
                 defaults={
                     "name": name,
                     "format_spec": format_spec,
-                    "parent_entity": parent_entity,
+                    "parent_entity": entity,
                 },
             )
 
@@ -279,9 +280,10 @@ class Command(BaseCommand):
             if self.dry_run:
                 continue
 
-            if not parent_quantity:
+            quantity = parent_quantity
+            if not quantity:
                 parent_uuid = data_file_dict.get("quantity", "")
-                parent_quantity = Quantity.objects.get(uuid=parent_uuid)
+                quantity = Quantity.objects.get(uuid=parent_uuid)
 
             (cur_data_file, _) = DataFile.objects.update_or_create(
                 uuid=uuid,
@@ -290,7 +292,7 @@ class Command(BaseCommand):
                     "upload_date": upload_date,
                     "metadata": metadata,
                     "file_data": file_data,
-                    "quantity": parent_quantity,
+                    "quantity": quantity,
                     "spec_version": data_file_dict.get("spec_version"),
                     "plot_file": plot_file,
                     "plot_mime_type": data_file_dict.get("plot_mime_type"),
