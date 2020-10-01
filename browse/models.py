@@ -160,12 +160,11 @@ class Entity(MPTTModel):
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
 
-    ordering = ("name",)
-
     def __str__(self):
         return self.name
 
     class Meta:
+        ordering = ("name",)
         verbose_name_plural = "entities"
 
 
@@ -254,16 +253,15 @@ class Quantity(models.Model):
         help_text="Entity to whom this quantity is related",
     )
 
-    ordering = (
-        "name",
-        "uuid",
-    )
-
     def __str__(self):
         return f"{self.name} ({str(self.uuid)[0:8]})"
 
     class Meta:
         verbose_name_plural = "quantities"
+        ordering = (
+            "name",
+            "uuid",
+        )
 
 
 def data_file_directory_path(instance, filename):
@@ -343,19 +341,20 @@ class DataFile(models.Model):
 
     comment = models.TextField(max_length=4096, blank=True, help_text="Free-form notes")
 
-    # When querying *all* the DataFile objects in a database, the
-    # (inverse) order by upload date will not be very meaningful… But
-    # usually we query only for DataFile objects related to some
-    # specific quantity, and in this case the ordering is what we
-    # would expect: the first object is the most recent one!
-    ordering = (
-        "-upload_date",
-        "name",
-        "uuid",
-    )
-
     def __str__(self):
         return f"{self.name} ({str(self.uuid)[0:8]})"
+
+    class Meta:
+        # When querying *all* the DataFile objects in a database, the
+        # (inverse) order by upload date will not be very meaningful… But
+        # usually we query only for DataFile objects related to some
+        # specific quantity, and in this case the ordering is what we
+        # would expect: the first object is the most recent one!
+        ordering = (
+            "-upload_date",
+            "name",
+            "uuid",
+        )
 
 
 class Release(models.Model):
