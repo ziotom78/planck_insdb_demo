@@ -1,5 +1,7 @@
 # HEAD
 
+-   Fix bug [#37](https://github.com/ziotom78/instrumentdb/issues/37)
+
 # Version 0.4.0
 
 -   Fix bug [#33](https://github.com/ziotom78/instrumentdb/issues/33)
