@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "mptt",
     "browse",
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -88,10 +89,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": [
-        # TODO: implement some way to limit access!
-        "rest_framework.permissions.AllowAny",
-    ],
+
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
 }
@@ -141,3 +139,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+LOGIN_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/'

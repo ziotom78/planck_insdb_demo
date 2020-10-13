@@ -14,9 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import login
 from django.urls import include, path, re_path
 
 from rest_framework import routers, serializers, viewsets
+from rest_framework.authtoken.views import obtain_auth_token
 
 from browse.views import (
     DataFileView,
@@ -37,7 +39,7 @@ from browse.views import (
     DataFileViewSet,
     ReleaseViewSet,
     api_release_view,
-    browse_release_view,
+    browse_release_view, login_token, EntityViewApi,
 )
 
 ################################################################################
@@ -88,4 +90,7 @@ urlpatterns = [
         r"^browse/releases/(?P<rel_name>[\w.-]+)/(?P<reference>[\w./-]+)/$",
         browse_release_view,
     ),
+    path("api/login", login_token),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path("api/entities/<pk>/", EntityViewApi.as_view(), name="entity-view-api"),
 ]

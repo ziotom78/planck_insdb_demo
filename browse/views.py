@@ -3,6 +3,8 @@
 import mimetypes
 from pathlib import Path
 
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
@@ -10,7 +12,9 @@ from django.views.generic.list import ListView
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 
-from rest_framework import viewsets
+from rest_framework import viewsets, authentication, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 from browse.serializers import (
@@ -23,11 +27,22 @@ from browse.serializers import (
     ReleaseSerializer,
 )
 
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 mimetypes.init()
 
 ###########################################################################
 
 
+@login_required
 def entity_tree_view(request):
     return render(
         request,
@@ -38,6 +53,21 @@ def entity_tree_view(request):
 
 class EntityView(DetailView):
     model = Entity
+
+
+class EntityViewApi(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+
+        print("CIAO!!")
+        cur_object = get_object_or_404(Entity, pk=pk)
+        #return Response(cur_object)
+        return Response({"message": "Hello!"})
+
+
+
 
 
 ###########################################################################
@@ -149,6 +179,17 @@ class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+
+        cur_object = get_object_or_404(Entity, pk=pk)
+        return Response(cur_object)
+        #return Response({"message": "Hello!"})
+
+
+
 
 class QuantityViewSet(viewsets.ModelViewSet):
     queryset = Quantity.objects.all()
@@ -210,3 +251,21 @@ def api_release_view(request, rel_name, reference):
 
 def browse_release_view(request, rel_name, reference):
     return release_view(request, rel_name, reference, browse_view=True)
+
+
+@api_view(["POST","GET"])
+@permission_classes((AllowAny,))
+def login_token(request):
+    username = request.GET.get("username")
+    password = request.GET.get("password")
+
+    if username is None or password is None:
+        return Response({'error': 'Please provide both username and password'},
+                        status=HTTP_400_BAD_REQUEST)
+    user = authenticate(username=username, password=password)
+    if not user:
+        return Response({'error': 'Invalid Credentials'},
+                        status=HTTP_404_NOT_FOUND)
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key},
+                    status=HTTP_200_OK)
