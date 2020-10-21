@@ -39,7 +39,7 @@ from browse.views import (
     DataFileViewSet,
     ReleaseViewSet,
     api_release_view,
-    browse_release_view, login_token, EntityViewApi,
+    browse_release_view, login_token
 )
 
 ################################################################################
@@ -92,5 +92,5 @@ urlpatterns = [
     ),
     path("api/login", login_token),
     path('accounts/', include('django.contrib.auth.urls')),
-    path("api/entities/<pk>/", EntityViewApi.as_view(), name="entity-view-api"),
+    #path("tokenapi/entities/<pk>/", EntityViewApi.as_view(), name="entity-view-api"),
 ]

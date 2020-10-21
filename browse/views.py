@@ -5,7 +5,7 @@ from pathlib import Path
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -53,20 +53,6 @@ def entity_tree_view(request):
 
 class EntityView(DetailView):
     model = Entity
-
-
-class EntityViewApi(APIView):
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, pk):
-
-        print("CIAO!!")
-        cur_object = get_object_or_404(Entity, pk=pk)
-        #return Response(cur_object)
-        return Response({"message": "Hello!"})
-
-
 
 
 
@@ -164,10 +150,16 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
 
 
 class FormatSpecificationViewSet(viewsets.ModelViewSet):
@@ -182,13 +174,10 @@ class EntityViewSet(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, pk):
-
-        cur_object = get_object_or_404(Entity, pk=pk)
-        return Response(cur_object)
-        #return Response({"message": "Hello!"})
-
-
+    def retrieve(self, request, pk):
+        ent = get_object_or_404(Entity, pk=pk)
+        serializer = EntitySerializer(ent, context={'request': request})
+        return Response(serializer.data)
 
 
 class QuantityViewSet(viewsets.ModelViewSet):
@@ -253,7 +242,7 @@ def browse_release_view(request, rel_name, reference):
     return release_view(request, rel_name, reference, browse_view=True)
 
 
-@api_view(["POST","GET"])
+@api_view(["POST", "GET"])
 @permission_classes((AllowAny,))
 def login_token(request):
     username = request.GET.get("username")
@@ -267,5 +256,15 @@ def login_token(request):
         return Response({'error': 'Invalid Credentials'},
                         status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key},
+
+    groups_array = []
+    for key in list(user.groups.values()):
+        groups_array.append(key["name"])
+
+    return Response({'token': token.key,
+                     'user': username,
+                     'is Staff': user.is_staff,
+                     'is SuperUser': user.is_superuser,
+                     'user permissions': user.user_permissions.all(),
+                     'groups': groups_array},
                     status=HTTP_200_OK)
