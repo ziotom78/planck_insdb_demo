@@ -2,7 +2,7 @@
 
 import json
 
-from rest_framework import serializers
+from rest_framework import serializers, request
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User, Group
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
@@ -173,3 +173,9 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             "data_files",
         ]
         ordering = ["-rel_date"]
+
+
+class UserSigninSerializer(serializers.Serializer):
+
+    username = serializers.CharField(required = True)
+    password = serializers.CharField(required = True)

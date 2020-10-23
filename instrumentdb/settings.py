@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from pathlib import Path
 import os
 
+from django.conf import settings
 from envparse import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,8 +87,13 @@ WSGI_APPLICATION = "instrumentdb.wsgi.application"
 # REST API
 
 REST_FRAMEWORK = {
+    #'DEFAULT_PERMISSION_CLASSES': (
+    #    'rest_framework.permissions.IsAuthenticated',
+    #),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
+        "instrumentdb.authentication.ExpiringTokenAuthentication",
+        #'rest_framework.authentication.SessionAuthentication',
     ),
 
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
@@ -141,3 +147,5 @@ USE_TZ = True
 STATIC_URL = "/static/"
 LOGIN_REDIRECT_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = '/'
+
+TOKEN_EXPIRED_AFTER_MINUTES = 15

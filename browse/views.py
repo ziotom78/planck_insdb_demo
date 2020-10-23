@@ -1,11 +1,14 @@
 # -*- encoding: utf-8 -*-
 
 import mimetypes
+from math import ceil
 from pathlib import Path
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils.datetime_safe import datetime
+from django.utils.timezone import utc
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -14,8 +17,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from rest_framework import viewsets, authentication, permissions
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
 
+import instrumentdb
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 from browse.serializers import (
     UserSerializer,
@@ -24,7 +27,7 @@ from browse.serializers import (
     EntitySerializer,
     QuantitySerializer,
     DataFileSerializer,
-    ReleaseSerializer,
+    ReleaseSerializer, UserSigninSerializer,
 )
 
 from rest_framework.status import (
@@ -35,9 +38,12 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
+
+from instrumentdb.authentication import token_expire_handler, expires_in
 
 mimetypes.init()
+
 
 ###########################################################################
 
@@ -53,7 +59,6 @@ def entity_tree_view(request):
 
 class EntityView(DetailView):
     model = Entity
-
 
 
 ###########################################################################
@@ -150,7 +155,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
 
@@ -158,7 +163,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
 
@@ -171,7 +176,7 @@ class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def retrieve(self, request, pk):
@@ -242,29 +247,39 @@ def browse_release_view(request, rel_name, reference):
     return release_view(request, rel_name, reference, browse_view=True)
 
 
-@api_view(["POST", "GET"])
-@permission_classes((AllowAny,))
-def login_token(request):
-    username = request.GET.get("username")
-    password = request.GET.get("password")
+@api_view(["POST"])
+@permission_classes((AllowAny,))  # here we specify permission by default we set IsAuthenticated
+def login_request(request):
 
-    if username is None or password is None:
-        return Response({'error': 'Please provide both username and password'},
-                        status=HTTP_400_BAD_REQUEST)
-    user = authenticate(username=username, password=password)
+    login_serializer = UserSigninSerializer(data=request.data, context={'request': request})
+    if not login_serializer.is_valid():
+        return Response(login_serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    user = authenticate(
+        username=login_serializer.data['username'],
+        password=login_serializer.data['password']
+    )
     if not user:
-        return Response({'error': 'Invalid Credentials'},
-                        status=HTTP_404_NOT_FOUND)
-    token, _ = Token.objects.get_or_create(user=user)
+        return Response({'detail': 'Invalid Credentials or account not active'}, status=HTTP_404_NOT_FOUND)
+
+    token, created = Token.objects.get_or_create(user=user)
+
+    if not created:
+         #update the created time of the token to keep it valid
+        token.created = datetime.utcnow().replace(tzinfo=utc)
+        token.save()
+
+    # token_expire_handler will check, if the token is expired it will generate new one
+    is_expired, token = token_expire_handler(token)
+    user_serialized = UserSerializer(user, context={'request': request})
 
     groups_array = []
     for key in list(user.groups.values()):
         groups_array.append(key["name"])
 
-    return Response({'token': token.key,
-                     'user': username,
-                     'is Staff': user.is_staff,
-                     'is SuperUser': user.is_superuser,
-                     'user permissions': user.user_permissions.all(),
-                     'groups': groups_array},
-                    status=HTTP_200_OK)
+    return Response({
+        'user': user_serialized.data["username"],
+        'groups:': groups_array,
+        'token': token.key,
+        'token_expires_in_minutes': int(ceil(expires_in(token).total_seconds()) // 60),
+    }, status=HTTP_200_OK)
