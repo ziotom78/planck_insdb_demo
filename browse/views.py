@@ -168,6 +168,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class FormatSpecificationViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     queryset = FormatSpecification.objects.all()
     serializer_class = FormatSpecificationSerializer
 
@@ -186,11 +189,17 @@ class EntityViewSet(viewsets.ModelViewSet):
 
 
 class QuantityViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     queryset = Quantity.objects.all()
     serializer_class = QuantitySerializer
 
 
 class DataFileViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     queryset = DataFile.objects.all()
     serializer_class = DataFileSerializer
 
@@ -198,6 +207,10 @@ class DataFileViewSet(viewsets.ModelViewSet):
 class ReleaseViewSet(viewsets.ModelViewSet):
     # Enable dots to be used in release tag names. See
     # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
+
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     lookup_value_regex = "[\w.]+"
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
