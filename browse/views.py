@@ -16,6 +16,7 @@ from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 
 from rest_framework import viewsets, authentication, permissions
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view, permission_classes
 
 import instrumentdb
@@ -155,7 +156,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
 
@@ -163,13 +164,18 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
 
 class FormatSpecificationViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     queryset = FormatSpecification.objects.all()
     serializer_class = FormatSpecificationSerializer
@@ -179,8 +185,13 @@ class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     def retrieve(self, request, pk):
         ent = get_object_or_404(Entity, pk=pk)
@@ -189,16 +200,26 @@ class EntityViewSet(viewsets.ModelViewSet):
 
 
 class QuantityViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     queryset = Quantity.objects.all()
     serializer_class = QuantitySerializer
 
 
 class DataFileViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     queryset = DataFile.objects.all()
     serializer_class = DataFileSerializer
@@ -208,8 +229,13 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     # Enable dots to be used in release tag names. See
     # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
     lookup_value_regex = "[\w.]+"
     queryset = Release.objects.all()
