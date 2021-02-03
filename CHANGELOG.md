@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 0.4.1
+
 -   Add link to the «Releases» page in the top bar and some more release information to the data file view [#40](https://github.com/ziotom78/instrumentdb/pull/40)
 
 -   Fix bug [#37](https://github.com/ziotom78/instrumentdb/issues/37)
