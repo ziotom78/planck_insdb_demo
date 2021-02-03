@@ -64,6 +64,32 @@
 </div>
 {% endif %}
 
+{% if object.release_tags.all %}
+<h2>Releases</h2>
+
+<table  class="table">
+  <thead>
+    <th scope="col">Release</th>
+    <th scope="col">Date</th>
+    <th scope="col">Object's path</th>
+  </thead>
+  
+  {% for cur_release in object.release_tags.all %}
+  <tr>
+    <td>
+      <a href="{% url 'release-view' cur_release.tag %}">{{ cur_release.tag }}</a>
+    </td>
+    <td>
+      {{ cur_release.rel_date|date:"M d, Y" }}
+    </td>
+    <td>
+      <tt>/releases/{{ cur_release.tag}}/{{ object.full_path }}</tt>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
 {% if object.dependencies.all %}
 <h2>Dependencies</h2>
 

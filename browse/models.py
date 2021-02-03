@@ -36,7 +36,14 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from instrumentdb.settings import STORAGE_PATH
 
-FileType = namedtuple("ImageFileType", ["mime_type", "file_extension", "description",])
+FileType = namedtuple(
+    "ImageFileType",
+    [
+        "mime_type",
+        "file_extension",
+        "description",
+    ],
+)
 
 # List of supported document types (for specification documents).
 # Please keep the most useful at the top of the list, then use
@@ -355,6 +362,12 @@ class DataFile(models.Model):
             "name",
             "uuid",
         )
+
+    @property
+    def full_path(self):
+        entity = self.quantity.parent_entity
+        ancestors = entity.get_ancestors(include_self=True)
+        return "/".join([x.name for x in ancestors]) + "/" + self.name
 
 
 class Release(models.Model):
