@@ -85,16 +85,56 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-You must have Python 3 and [Poetry](https://python-poetry.org/)
-already installed on your system. I developed it under Linux Manjaro,
-but it should be usable on other platforms too (Windows, Mac OS X,
-FreeBSD, …).
+You must have Python 3; it is advised to create a virtual environment
+before installing InstrumentDB.
+
+### Installation
+ 
+1.  Clone the repo:
+    ```sh
+    git clone https://github.com/ziotom78/instrumentdb.git && cd instrumentdb
+    ```
+    
+2.  Install all the dependencies using `poetry`
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+3.  Create a custom configuration file and customize it. Be sure to
+    put some random password in `SECRET_KEY`!
+    ```sh
+    cp .env.example .env && vim .env
+    ```
+    
+3.  Create the database
+    ```sh
+    ./manage.py migrate
+    ```
+
+4.  Create a superuser
+    ```sh
+    ./manage.py createsuperuser
+    ```
+
+4.  Fire up the web server
+    ```sh
+    ./manage.py runserver
+    ```
+
+5.  Connect to http://127.0.0.1:8000/ and enjoy!
+
+
+### Developer installation
+
+Developers willing to hack instrumentdb should install
+[Poetry](https://python-poetry.org/). I developed InstrumentDB under
+Linux Manjaro and Linux Mint 20.1, but it should be usable on other
+platforms too (Windows, Mac OS X, FreeBSD, …).
 
 To install Poetry, see
 [here](https://python-poetry.org/docs/#installation).
 
-### Installation
- 
+
 1.  Clone the repo:
     ```sh
     git clone https://github.com/ziotom78/instrumentdb.git && cd instrumentdb

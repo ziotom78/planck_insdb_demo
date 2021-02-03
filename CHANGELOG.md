@@ -1,5 +1,9 @@
 # HEAD
 
+# Version 0.4.2
+
+-   Explain how to install InstrumentDB without Poetry in the README.
+
 # Version 0.4.1
 
 -   Add link to the «Releases» page in the top bar and some more release information to the data file view [#40](https://github.com/ziotom78/instrumentdb/pull/40)
