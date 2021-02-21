@@ -300,13 +300,49 @@ database, and it can be used either from the command line (using tools like
 ``curl`` or `httpie <https://httpie.org/>`_) or programmatically. We'll show
 how to use `httpie` first.
 
-To create a new entity named ``foo``, install `httpie` and run the following
+First of all, we need to call login service in order to get the authentication token, required by
+all the REST services.
+
+To log in , install `httpie` and run the following
 command:
 
 .. code-block:: none
 
-  http POST http://127.0.0.1:8000/api/entities/ \
-      name=foo quantities:="[]"
+  http POST http://127.0.0.1:8000/api/login  \
+        username=user1 password=passwd54321
+
+If the call to login service is successful, you should see the following output with the token and other info:
+
+.. code-block:: none
+
+    HTTP/1.1 200 OK
+    Allow: POST, OPTIONS
+    Content-Length: 118
+    Content-Type: application/json
+    Date: Thu, 18 Feb 2021 14:28:01 GMT
+    Server: WSGIServer/0.2 CPython/3.7.4
+    Vary: Accept, Cookie
+    X-Content-Type-Options: nosniff
+    X-Frame-Options: DENY
+
+    {
+        "groups:": [
+            "group1"
+        ],
+        "token": "e0dcc1d3802aab6ee955723eca97aac3d1bff4a2",
+        "token_expires_in_minutes": 15,
+        "user": "user1"
+    }
+
+
+To create a new entity named ``foo``, run the following
+command:
+
+.. code-block:: none
+
+  http POST http://127.0.0.1:8000/api/entities/   \
+    name=foo quantities:="[]" "Authorization: Token e0dcc1d3802aab6ee955723eca97aac3d1bff4a2"
+
 
 This is the way a RESTful API operates: you `post` an object to a URL, which
 in this case is http://127.0.0.1:8000/api/entities/. The real object must be
@@ -345,7 +381,8 @@ children, you have to specify the UUID of the parent:
   http POST http://127.0.0.1:8000/api/entities/ \
       name:="bar" \
       parent:="/api/entities/cb49c625-bd96-4027-99fd-91c3b8ff8a6b/" \
-      quantities:="[]"
+      quantities:="[]" \
+      "Authorization: Token e0dcc1d3802aab6ee955723eca97aac3d1bff4a2"
 
 (Change the value of the ``parent`` key to use the UUID printed before, and
 be sure to remember the end slash!)
@@ -361,33 +398,52 @@ we create the same object structure as the one above::
 
   import requests as req
 
+  server_url = "http://127.0.0.1:8000"
+  
+  # Get authentication token (login)
+  response = req.post(url=f"{server_url}/api/login",
+      data={"username":"user1", "password": "passwd54321"}
+  )
+
+  # Ensure that the request was completed
+  assert response.ok
+
+  # Get the token
+  authentication = response.json()
+  token = authentication["token"]
+
+  # This dictionary must be passed as header to all the requests
+  auth_header = {"Authorization": f"Token {token}"}
+  
   # Create a new entity in the database
   response = req.post(
-      url="http://127.0.0.1:8000/api/entities/",
+      url=f"{server_url}/api/entities/",
       data={ "name": "foo_python", "parent": None },
+      headers=auth_header,
   )
 
   # Ensure that the request was completed
   assert response.ok
 
   uuid = response.json()["uuid"]
-
   print("Object created, UUID is ", uuid)
 
   # Create another entity in the database,
   # which is a child of the one above
   response = req.post(
-      url="http://127.0.0.1:8000/api/entities/",
+      url=f"{server_url}/api/entities/",
       data={ 
           "name": "bar_python",
-          "parent": f"http://127.0.0.1:8000/api/entities/{uuid}/",
+          "parent": f"{server_url}/api/entities/{uuid}/",
       },
+      headers=auth_header,
   )
 
   assert response.ok
 
 
 .. _tut-accessing-the-database:
+
 
 Accessing the database
 ----------------------

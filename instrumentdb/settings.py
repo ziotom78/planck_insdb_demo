@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from pathlib import Path
 import os
 
+from django.conf import settings
 from envparse import Env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "mptt",
     "browse",
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -85,13 +87,15 @@ WSGI_APPLICATION = "instrumentdb.wsgi.application"
 # REST API
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     ),
-    "DEFAULT_PERMISSION_CLASSES": [
-        # TODO: implement some way to limit access!
-        "rest_framework.permissions.AllowAny",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        #"rest_framework.authentication.TokenAuthentication",
+        "instrumentdb.authentication.ExpiringTokenAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
 }
@@ -141,3 +145,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+LOGIN_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/'
+
+TOKEN_EXPIRED_AFTER_MINUTES = 15
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600 #(seconds) #86400 #1day

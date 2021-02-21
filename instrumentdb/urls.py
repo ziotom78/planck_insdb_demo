@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers
 
 from browse.views import (
     DataFileView,
@@ -37,7 +37,7 @@ from browse.views import (
     DataFileViewSet,
     ReleaseViewSet,
     api_release_view,
-    browse_release_view,
+    browse_release_view, login_request
 )
 
 ################################################################################
@@ -88,4 +88,6 @@ urlpatterns = [
         r"^browse/releases/(?P<rel_name>[\w.-]+)/(?P<reference>[\w./-]+)/$",
         browse_release_view,
     ),
+    path("api/login", login_request),
+    path('accounts/', include('django.contrib.auth.urls'))
 ]

@@ -1,17 +1,25 @@
 # -*- encoding: utf-8 -*-
 
 import mimetypes
+from math import ceil
 from pathlib import Path
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.utils.datetime_safe import datetime
+from django.utils.timezone import utc
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
 
-from rest_framework import viewsets
+from rest_framework import viewsets, authentication, permissions
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view, permission_classes
 
+import instrumentdb
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
 from browse.serializers import (
     UserSerializer,
@@ -20,14 +28,28 @@ from browse.serializers import (
     EntitySerializer,
     QuantitySerializer,
     DataFileSerializer,
-    ReleaseSerializer,
+    ReleaseSerializer, UserSigninSerializer,
 )
 
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+
+from rest_framework.permissions import AllowAny
+
+from instrumentdb.authentication import token_expire_handler, expires_in
+
 mimetypes.init()
+
 
 ###########################################################################
 
 
+@login_required
 def entity_tree_view(request):
     return render(
         request,
@@ -134,13 +156,27 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
 
 class FormatSpecificationViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
     queryset = FormatSpecification.objects.all()
     serializer_class = FormatSpecificationSerializer
 
@@ -149,13 +185,42 @@ class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
+    def retrieve(self, request, pk):
+        ent = get_object_or_404(Entity, pk=pk)
+        serializer = EntitySerializer(ent, context={'request': request})
+        return Response(serializer.data)
+
 
 class QuantityViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
     queryset = Quantity.objects.all()
     serializer_class = QuantitySerializer
 
 
 class DataFileViewSet(viewsets.ModelViewSet):
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
     queryset = DataFile.objects.all()
     serializer_class = DataFileSerializer
 
@@ -163,6 +228,15 @@ class DataFileViewSet(viewsets.ModelViewSet):
 class ReleaseViewSet(viewsets.ModelViewSet):
     # Enable dots to be used in release tag names. See
     # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
+
+    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
     lookup_value_regex = "[\w.]+"
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
@@ -210,3 +284,41 @@ def api_release_view(request, rel_name, reference):
 
 def browse_release_view(request, rel_name, reference):
     return release_view(request, rel_name, reference, browse_view=True)
+
+
+@api_view(["POST"])
+@permission_classes((AllowAny,))  # here we specify permission by default we set IsAuthenticated
+def login_request(request):
+
+    login_serializer = UserSigninSerializer(data=request.data, context={'request': request})
+    if not login_serializer.is_valid():
+        return Response(login_serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    user = authenticate(
+        username=login_serializer.data['username'],
+        password=login_serializer.data['password']
+    )
+    if not user:
+        return Response({'detail': 'Invalid Credentials or account not active'}, status=HTTP_404_NOT_FOUND)
+
+    token, created = Token.objects.get_or_create(user=user)
+
+    if not created:
+         #update the created time of the token to keep it valid
+        token.created = datetime.utcnow().replace(tzinfo=utc)
+        token.save()
+
+    # token_expire_handler will check, if the token is expired it will generate new one
+    is_expired, token = token_expire_handler(token)
+    user_serialized = UserSerializer(user, context={'request': request})
+
+    groups_array = []
+    for key in list(user.groups.values()):
+        groups_array.append(key["name"])
+
+    return Response({
+        'user': user_serialized.data["username"],
+        'groups:': groups_array,
+        'token': token.key,
+        'token_expires_in_minutes': int(ceil(expires_in(token).total_seconds()) // 60),
+    }, status=HTTP_200_OK)

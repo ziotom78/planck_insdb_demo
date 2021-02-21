@@ -30,9 +30,19 @@ from collections import namedtuple
 from pathlib import Path
 
 import uuid
+
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
+from rest_framework import permissions
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 from instrumentdb.settings import STORAGE_PATH
 
@@ -387,3 +397,30 @@ class Release(models.Model):
     )
 
     comment = models.CharField(max_length=4096, blank=True, help_text="Free-form text")
+
+
+class Account(AbstractBaseUser):
+	email 					= models.EmailField(verbose_name="email", max_length=60, unique=True)
+	username 				= models.CharField(max_length=30, unique=True)
+	date_joined				= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
+	last_login				= models.DateTimeField(verbose_name='last login', auto_now=True)
+	is_admin				= models.BooleanField(default=False)
+	is_active				= models.BooleanField(default=True)
+	is_staff				= models.BooleanField(default=False)
+	is_superuser			= models.BooleanField(default=False)
+
+
+	USERNAME_FIELD = 'email'
+	REQUIRED_FIELDS = ['username']
+
+
+	def __str__(self):
+		return self.email
+
+	# For checking permissions. to keep it simple all admin have ALL permissons
+	def has_perm(self, perm, obj=None):
+		return self.is_admin
+
+	# Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
+	def has_module_perms(self, app_label):
+		return True
