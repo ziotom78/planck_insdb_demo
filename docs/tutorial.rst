@@ -398,51 +398,52 @@ we create the same object structure as the one above::
 
   import requests as req
 
-  #Get authentication token (login)
-   response = req.post(
-      response = req.post(url="http://127.0.0.1:8000/api/login",
+  server_url = "http://127.0.0.1:8000"
+  
+  # Get authentication token (login)
+  response = req.post(url=f"{server_url}/api/login",
       data={"username":"user1", "password": "passwd54321"}
   )
 
   # Ensure that the request was completed
   assert response.ok
 
-  #get the token
-  response.content
+  # Get the token
+  authentication = response.json()
+  token = authentication["token"]
 
-  '{"user":"user1","groups:":["group1"],
-  "token":"e0dcc1d3802aab6ee955723eca97aac3d1bff4a2",
-  "token_expires_in_minutes":15}'
-
+  # This dictionary must be passed as header to all the requests
+  auth_header = {"Authorization": f"Token {token}"}
+  
   # Create a new entity in the database
   response = req.post(
-      url="http://127.0.0.1:8000/api/entities/",
-      data={ "name": "foo_python", "parent": None }
-      headers={'Authorization': 'Token e0dcc1d3802aab6ee955723eca97aac3d1bff4a2'},
+      url=f"{server_url}/api/entities/",
+      data={ "name": "foo_python", "parent": None },
+      headers=auth_header,
   )
 
   # Ensure that the request was completed
   assert response.ok
 
   uuid = response.json()["uuid"]
-
   print("Object created, UUID is ", uuid)
 
   # Create another entity in the database,
   # which is a child of the one above
   response = req.post(
-      url="http://127.0.0.1:8000/api/entities/",
+      url=f"{server_url}/api/entities/",
       data={ 
           "name": "bar_python",
-          "parent": f"http://127.0.0.1:8000/api/entities/{uuid}/",
+          "parent": f"{server_url}/api/entities/{uuid}/",
       },
-      headers={'Authorization': 'Token e0dcc1d3802aab6ee955723eca97aac3d1bff4a2'}
+      headers=auth_header,
   )
 
   assert response.ok
 
 
 .. _tut-accessing-the-database:
+
 
 Accessing the database
 ----------------------
