@@ -1,5 +1,7 @@
 # HEAD
 
+-   Authentication has been fully implemented [#39](https://github.com/ziotom78/instrumentdb/pull/39)
+
 # Version 0.4.2
 
 -   Explain how to install InstrumentDB without Poetry in the README.
