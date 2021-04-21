@@ -37,7 +37,8 @@ from browse.views import (
     DataFileViewSet,
     ReleaseViewSet,
     api_release_view,
-    browse_release_view, login_request
+    browse_release_view,
+    login_request,
 )
 
 ################################################################################
@@ -89,5 +90,5 @@ urlpatterns = [
         browse_release_view,
     ),
     path("api/login", login_request),
-    path('accounts/', include('django.contrib.auth.urls'))
+    path("accounts/", include("django.contrib.auth.urls")),
 ]

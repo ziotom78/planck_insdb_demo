@@ -41,7 +41,9 @@ class RelationshipsTestCase(TestCase):
         )
 
         grasp_file = DataFile.objects.create(
-            name="rtc_grasp_beam.fits", quantity=grasp_beam, spec_version="1.0",
+            name="rtc_grasp_beam.fits",
+            quantity=grasp_beam,
+            spec_version="1.0",
         )
 
         synth_file = DataFile.objects.create(

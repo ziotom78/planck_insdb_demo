@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('browse', '0006_auto_20200701_1044'),
+        ("browse", "0006_auto_20200701_1044"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='datafile',
-            options={'ordering': ('-upload_date', 'name', 'uuid')},
+            name="datafile",
+            options={"ordering": ("-upload_date", "name", "uuid")},
         ),
         migrations.AlterModelOptions(
-            name='entity',
-            options={'ordering': ('name',), 'verbose_name_plural': 'entities'},
+            name="entity",
+            options={"ordering": ("name",), "verbose_name_plural": "entities"},
         ),
         migrations.AlterModelOptions(
-            name='quantity',
-            options={'ordering': ('name', 'uuid'), 'verbose_name_plural': 'quantities'},
+            name="quantity",
+            options={"ordering": ("name", "uuid"), "verbose_name_plural": "quantities"},
         ),
     ]

@@ -115,7 +115,9 @@ class JSONField(serializers.Field):
 
 class DataFileSerializer(serializers.HyperlinkedModelSerializer):
     release_tags = serializers.HyperlinkedRelatedField(
-        view_name="release-detail", many=True, queryset=Release.objects.all(),
+        view_name="release-detail",
+        many=True,
+        queryset=Release.objects.all(),
     )
     url = serializers.HyperlinkedIdentityField(
         view_name="datafile-detail", read_only=True
@@ -157,7 +159,9 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     data_files = serializers.HyperlinkedRelatedField(
-        view_name="datafile-detail", many=True, queryset=DataFile.objects.all(),
+        view_name="datafile-detail",
+        many=True,
+        queryset=DataFile.objects.all(),
     )
     url = serializers.HyperlinkedIdentityField(
         view_name="release-detail", read_only=True
@@ -177,5 +181,5 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSigninSerializer(serializers.Serializer):
 
-    username = serializers.CharField(required = True)
-    password = serializers.CharField(required = True)
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)

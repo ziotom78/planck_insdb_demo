@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('browse', '0004_auto_20200630_1030'),
+        ("browse", "0004_auto_20200630_1030"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='datafile',
-            old_name='release_tag',
-            new_name='release_tags',
+            model_name="datafile",
+            old_name="release_tag",
+            new_name="release_tags",
         ),
     ]

@@ -54,7 +54,7 @@ class ExpiringTokenAuthentication(TokenAuthentication):
         if is_expired:
             raise AuthenticationFailed("The Token is expired")
 
-        #update the created time of the token to keep it valid
+        # update the created time of the token to keep it valid
         token.created = datetime.utcnow().replace(tzinfo=utc)
         token.save()
         return token.user, token

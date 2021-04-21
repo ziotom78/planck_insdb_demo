@@ -81,7 +81,11 @@ def create_release_spec(client, tag, comment="", data_files=[]):
     response = client.post(
         url,
         format="json",
-        data={"tag": tag, "comment": comment, "data_files": data_files,},
+        data={
+            "tag": tag,
+            "comment": comment,
+            "data_files": data_files,
+        },
     )
     return response
 

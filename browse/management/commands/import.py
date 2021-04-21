@@ -57,7 +57,11 @@ class Command(BaseCommand):
                 cur_entity = Entity.objects.filter(uuid=uuid)
                 if not (self.no_overwrite and cur_entity):
                     (cur_entity, _) = Entity.objects.update_or_create(
-                        uuid=uuid, defaults={"name": cur_entity_name, "parent": parent,}
+                        uuid=uuid,
+                        defaults={
+                            "name": cur_entity_name,
+                            "parent": parent,
+                        },
                     )
                 else:
                     cur_entity = cur_entity[0]
@@ -337,7 +341,8 @@ class Command(BaseCommand):
 
             if not self.dry_run:
                 (cur_release, _) = Release.objects.update_or_create(
-                    tag=tag, defaults={"rel_date": rel_date, "comment": comment},
+                    tag=tag,
+                    defaults={"rel_date": rel_date, "comment": comment},
                 )
 
                 for cur_uuid in data_files:
@@ -352,7 +357,9 @@ class Command(BaseCommand):
             help="Do not execute any action on the database (useful for testing)",
         )
         parser.add_argument(
-            "--json", action="store_true", help="Unused",
+            "--json",
+            action="store_true",
+            help="Unused",
         )
         parser.add_argument(
             "--no-overwrite",

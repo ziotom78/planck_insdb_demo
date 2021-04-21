@@ -28,14 +28,11 @@ from browse.serializers import (
     EntitySerializer,
     QuantitySerializer,
     DataFileSerializer,
-    ReleaseSerializer, UserSigninSerializer,
+    ReleaseSerializer,
+    UserSigninSerializer,
 )
 
-from rest_framework.status import (
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-    HTTP_200_OK
-)
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
@@ -156,7 +153,10 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
     permission_classes = [permissions.IsAdminUser]
 
 
@@ -164,16 +164,22 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
     permission_classes = [permissions.IsAdminUser]
 
 
 class FormatSpecificationViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
-    #permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'DELETE']:
+        if self.request.method in ["PUT", "DELETE"]:
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
@@ -185,26 +191,32 @@ class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
-    #permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'DELETE']:
+        if self.request.method in ["PUT", "DELETE"]:
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
     def retrieve(self, request, pk):
         ent = get_object_or_404(Entity, pk=pk)
-        serializer = EntitySerializer(ent, context={'request': request})
+        serializer = EntitySerializer(ent, context={"request": request})
         return Response(serializer.data)
 
 
 class QuantityViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
-    #permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'DELETE']:
+        if self.request.method in ["PUT", "DELETE"]:
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
@@ -213,11 +225,14 @@ class QuantityViewSet(viewsets.ModelViewSet):
 
 
 class DataFileViewSet(viewsets.ModelViewSet):
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
-    #permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'DELETE']:
+        if self.request.method in ["PUT", "DELETE"]:
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
@@ -229,11 +244,14 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     # Enable dots to be used in release tag names. See
     # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
 
-    authentication_classes = [instrumentdb.authentication.ExpiringTokenAuthentication, SessionAuthentication]
-    #permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [
+        instrumentdb.authentication.ExpiringTokenAuthentication,
+        SessionAuthentication,
+    ]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        if self.request.method in ['PUT', 'DELETE']:
+        if self.request.method in ["PUT", "DELETE"]:
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
@@ -287,38 +305,50 @@ def browse_release_view(request, rel_name, reference):
 
 
 @api_view(["POST"])
-@permission_classes((AllowAny,))  # here we specify permission by default we set IsAuthenticated
+@permission_classes(
+    (AllowAny,)
+)  # here we specify permission by default we set IsAuthenticated
 def login_request(request):
 
-    login_serializer = UserSigninSerializer(data=request.data, context={'request': request})
+    login_serializer = UserSigninSerializer(
+        data=request.data, context={"request": request}
+    )
     if not login_serializer.is_valid():
         return Response(login_serializer.errors, status=HTTP_400_BAD_REQUEST)
 
     user = authenticate(
-        username=login_serializer.data['username'],
-        password=login_serializer.data['password']
+        username=login_serializer.data["username"],
+        password=login_serializer.data["password"],
     )
     if not user:
-        return Response({'detail': 'Invalid Credentials or account not active'}, status=HTTP_404_NOT_FOUND)
+        return Response(
+            {"detail": "Invalid Credentials or account not active"},
+            status=HTTP_404_NOT_FOUND,
+        )
 
     token, created = Token.objects.get_or_create(user=user)
 
     if not created:
-         #update the created time of the token to keep it valid
+        # update the created time of the token to keep it valid
         token.created = datetime.utcnow().replace(tzinfo=utc)
         token.save()
 
     # token_expire_handler will check, if the token is expired it will generate new one
     is_expired, token = token_expire_handler(token)
-    user_serialized = UserSerializer(user, context={'request': request})
+    user_serialized = UserSerializer(user, context={"request": request})
 
     groups_array = []
     for key in list(user.groups.values()):
         groups_array.append(key["name"])
 
-    return Response({
-        'user': user_serialized.data["username"],
-        'groups:': groups_array,
-        'token': token.key,
-        'token_expires_in_minutes': int(ceil(expires_in(token).total_seconds()) // 60),
-    }, status=HTTP_200_OK)
+    return Response(
+        {
+            "user": user_serialized.data["username"],
+            "groups:": groups_array,
+            "token": token.key,
+            "token_expires_in_minutes": int(
+                ceil(expires_in(token).total_seconds()) // 60
+            ),
+        },
+        status=HTTP_200_OK,
+    )

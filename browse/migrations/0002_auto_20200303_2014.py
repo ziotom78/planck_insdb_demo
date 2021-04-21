@@ -43,10 +43,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AlterModelOptions(
-            name="entity", options={"verbose_name_plural": "entities"},
+            name="entity",
+            options={"verbose_name_plural": "entities"},
         ),
         migrations.AlterModelOptions(
-            name="quantity", options={"verbose_name_plural": "quantities"},
+            name="quantity",
+            options={"verbose_name_plural": "quantities"},
         ),
         migrations.AddField(
             model_name="datafile",
