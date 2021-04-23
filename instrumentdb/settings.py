@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "mptt",
     "browse",
     "rest_framework.authtoken",
+    "sslserver",
 ]
 
 MIDDLEWARE = [
