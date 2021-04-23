@@ -1,5 +1,7 @@
 # HEAD
 
+-   Add dependency on [sslserver](https://github.com/teddziuba/django-sslserver) [#47](https://github.com/ziotom78/instrumentdb/pull/47)
+
 -   Authentication has been fully implemented [#39](https://github.com/ziotom78/instrumentdb/pull/39)
 
 # Version 0.4.2
