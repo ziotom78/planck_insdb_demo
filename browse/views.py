@@ -38,7 +38,11 @@ from rest_framework.authtoken.models import Token
 
 from rest_framework.permissions import AllowAny
 
-from instrumentdb.authentication import token_expire_handler, expires_in
+from instrumentdb.authentication import (
+    token_expire_handler,
+    expires_in,
+    is_token_expired,
+)
 
 mimetypes.init()
 
@@ -328,7 +332,7 @@ def login_request(request):
 
     token, created = Token.objects.get_or_create(user=user)
 
-    if not created:
+    if not created and not is_token_expired(token):
         # update the created time of the token to keep it valid
         token.created = datetime.utcnow().replace(tzinfo=utc)
         token.save()
