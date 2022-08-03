@@ -3,7 +3,14 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from browse.models import FormatSpecification, Entity, Quantity, DataFile, Release, Account
+from browse.models import (
+    FormatSpecification,
+    Entity,
+    Quantity,
+    DataFile,
+    Release,
+    Account,
+)
 
 
 TEST_ACCOUNT_EMAIL = "test@localhost"
@@ -11,7 +18,9 @@ TEST_ACCOUNT_USER = "test_user"
 
 
 def _create_test_user_and_authenticate(client):
-    test_user = Account.objects.create(email=TEST_ACCOUNT_EMAIL, username=TEST_ACCOUNT_USER)
+    test_user = Account.objects.create(
+        email=TEST_ACCOUNT_EMAIL, username=TEST_ACCOUNT_USER
+    )
     client.force_authenticate(user=test_user)
 
 
@@ -200,7 +209,7 @@ class DataFileTests(APITestCase):
 class ReleaseTests(APITestCase):
     def setUp(self):
         _create_test_user_and_authenticate(self.client)
-        
+
         self.formatspec_response = create_format_spec(self.client, "DUMMY_REF_001")
         self.entity_response = create_entity_spec(self.client, "test_entity")
         self.quantity_response = create_quantity_spec(
