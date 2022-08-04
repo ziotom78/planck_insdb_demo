@@ -1,5 +1,9 @@
 # HEAD
 
+# Version 0.5.1
+
+-   Fix broken dependencies in `pyproject.toml` and `requirements.txt`
+
 # Version 0.5.0
 
 -   Add RESTful API to upload data files and plot files [#60](https://github.com/ziotom78/instrumentdb/pull/60)
