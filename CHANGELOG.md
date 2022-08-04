@@ -1,6 +1,10 @@
 # HEAD
 
--    Bump django from 3.2.4 to 3.2.5 [#52](https://github.com/ziotom78/instrumentdb/pull/52)
+# Version 0.5.0
+
+-   Add RESTful API to upload data files and plot files [#60](https://github.com/ziotom78/instrumentdb/pull/60)
+
+-   Bump django from 3.2.4 to 3.2.5 [#52](https://github.com/ziotom78/instrumentdb/pull/52)
 -    
 -   Add dependency on [sslserver](https://github.com/teddziuba/django-sslserver) [#47](https://github.com/ziotom78/instrumentdb/pull/47)
 
