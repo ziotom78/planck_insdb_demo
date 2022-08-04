@@ -108,6 +108,7 @@ JSON record containing these keys:
   downloaded locally into an actual file.
 - ``upload_date``: the date and time when the file was created. If not
   provided, the current date will be used.
+- ``file_data``: a file-like object containing the contents of the file.
 - ``metadata``: a JSON structure containing custom metadata associated
   with the data file.
 - ``quantity``: the URL to the quantity that owns this data file.
@@ -118,10 +119,53 @@ JSON record containing these keys:
   to produce this very data file (optional).
 - ``plot_mime_type``: the MIME type of the plot associated with this
   data file (optional).
+- ``plot_file``: a file-like object containing a visual representation
+  of the data file.
 - ``comment``: a string containing any comment (optional).
 - ``release_tags``: a list of URLS to the releases that include this
   data file (optional).
-  
+
+Creating a ``POST`` command in Python with the
+`requests <https://pypi.org/project/requests/>`_ library requires you
+to send the JSON and (optionally) the two files containing the data
+file itself and the plot. You can achieve this using both the ``data=``
+and ``files=`` keywords when calling ``requests.post``, like in the
+following example::
+
+    import requests
+
+    server_url = "http://127.0.0.1:8000"
+
+    response = req.post(
+        url=f"{server_url}/api/login",
+        data={"username": "foo", "password": "bar"},
+    )
+
+    response = requests.post(
+        url=f"{server_url}/api/data_files/",
+        data={
+            name="My data file",
+            quantity=f"{server_url}/api/quantities/4a0c5e12-da9c-4c7a-923e-810a19974444/",
+            spec_version="1.0",
+            metadata="{}",
+            plot_mime_type="image/png",  # THIS IS MANDATORY IF YOU INCLUDE "plot_file" BELOW!
+        },
+        files={
+            "file_data": open("/local_storage/spreadsheet.xlsx", "rb"),
+            "plot_file": open("/local_storage/summary_plot.png", "rb"),
+        },
+    )
+
+    assert response.ok
+
+    uuid = response.json()["uuid"]
+    print("Data file created, UUID is ", uuid)
+
+It is *required* that you specify ``plot_mime_type`` if you plan to
+pass ``plot_file`` like in the example above, because this will be used
+to determine how to show the image when browsing the database through the
+web interface.
+
 Releases
 --------
 

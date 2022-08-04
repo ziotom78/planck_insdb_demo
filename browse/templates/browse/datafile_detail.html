@@ -25,9 +25,13 @@
   <img
     src="{% url 'data-file-plot-view' object.uuid %}"
     class="img-fluid"
+    style="max-width:60%;"
     alt="Plot of the data file">
-  <figcaption class="figure-caption">Plot of the data file</figcaption>
 </figure>
+{% endif %}
+
+{% if object.file_data %}
+<p></p><a class="btn btn-primary" href="{% url 'data-file-download-view' object.uuid %}">Download ({{ object.file_data.size|filesizeformat }})</a></p>
 {% endif %}
 
 <div class="row">
@@ -55,12 +59,6 @@
 {% endautoescape %}
     </code>
   </pre>
-</div>
-{% endif %}
-
-{% if object.file_data %}
-<div class="row justify-content-end">
-  <a class="btn btn-primary" href="{% url 'data-file-download-view' object.uuid %}">Download ({{ object.file_data.size|filesizeformat }})</a>
 </div>
 {% endif %}
 
