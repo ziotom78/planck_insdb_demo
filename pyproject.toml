@@ -18,7 +18,7 @@ gitpython = "^3.1.0"
 envparse = "^0.2.0"
 sphinx = "^5.1.1"
 django-sslserver = "^0.22"
-Pillow = "^9.2.0"
+Pillow = "^9.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
