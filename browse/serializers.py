@@ -142,8 +142,14 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
             "release_tags",
         ]
         extra_kwargs = {
-            "file_data": { "max_length": 512, "allow_empty_file": True, },
-            "plot_file": { "max_length": 512, "allow_empty_file": True, },
+            "file_data": {
+                "max_length": 512,
+                "allow_empty_file": True,
+            },
+            "plot_file": {
+                "max_length": 512,
+                "allow_empty_file": True,
+            },
         }
 
     def to_representation(self, instance):
