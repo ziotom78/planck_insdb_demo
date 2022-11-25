@@ -144,6 +144,8 @@ class DataFilePlotDownloadView(View):
 class ReleaseListView(ListView):
     model = Release
 
+    ordering = ["-tag"]
+
 
 class ReleaseView(DetailView):
     model = Release
@@ -158,7 +160,8 @@ class ReleaseDownloadView(View):
         file_data.open()
         data = file_data.read()
         resp = HttpResponse(
-            data, content_type="application/json",
+            data,
+            content_type="application/json",
         )
         resp["Content-Disposition"] = 'attachment; filename="schema_{0}.json"'.format(
             cur_object.tag,

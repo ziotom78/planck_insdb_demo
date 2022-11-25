@@ -443,7 +443,6 @@ class Release(models.Model):
         return result
 
 
-
 class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=30, unique=True)
@@ -470,6 +469,7 @@ class Account(AbstractBaseUser):
 
 
 ###################################################################################################
+
 
 class DumpOutputFormat(Enum):
     JSON = 1

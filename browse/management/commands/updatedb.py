@@ -8,7 +8,14 @@ from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_aware, make_aware
 from django.core.management.base import BaseCommand, CommandError
-from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release, update_release_file_dumps
+from browse.models import (
+    Entity,
+    Quantity,
+    DataFile,
+    FormatSpecification,
+    Release,
+    update_release_file_dumps,
+)
 
 
 class Command(BaseCommand):
