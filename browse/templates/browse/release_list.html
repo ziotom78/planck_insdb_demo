@@ -6,21 +6,23 @@
 <h1>IMO Releases</h1>
 
 <div class="list-group">
-  <table>
+  <table class="table table-bordered table-striped">
       <thead>
       <tr>
-          <td>Version</td>
-          <td>Date</td>
-          <td>JSON file</td>
+          <th scope="col">Version</th>
+          <th scope="col">Date</th>
+          <th scope="col">Comment</th>
+          <th scope="col">JSON file</th>
       </tr>
       </thead>
       <tbody>
       {% for obj in object_list %}
       <tr>
-          <td>
+          <th scope="row">
               <a href="{% url 'release-view' obj.tag %}">{{ obj.tag }}</a>
-          </td>
+          </th>
           <td>{{ obj.rel_date }}</td>
+          <td>{{ obj.comment }}</td>
           <td>
               <a class="btn btn-primary" href="{% url 'release-download-view' obj.tag %}">
                 Download ({{ obj.json_file.size|filesizeformat }})
