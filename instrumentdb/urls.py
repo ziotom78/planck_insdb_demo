@@ -38,7 +38,7 @@ from browse.views import (
     ReleaseViewSet,
     api_release_view,
     browse_release_view,
-    login_request,
+    login_request, ReleaseDownloadView,
 )
 
 ################################################################################
@@ -72,6 +72,7 @@ urlpatterns = [
     path("browse/quantities/<pk>/", QuantityView.as_view(), name="quantity-view"),
     path("browse/releases/", ReleaseListView.as_view(), name="release-list-view"),
     path("browse/releases/<pk>/", ReleaseView.as_view(), name="release-view"),
+    path("browse/releases/<pk>/download/", ReleaseDownloadView.as_view(), name="release-download-view"),
     path(
         "browse/format_specs/",
         FormatSpecificationListView.as_view(),

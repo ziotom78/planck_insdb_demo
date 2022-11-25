@@ -149,6 +149,23 @@ class ReleaseView(DetailView):
     model = Release
 
 
+class ReleaseDownloadView(View):
+    def get(self, request, pk):
+        "Allow the user to download a release JSON file"
+
+        cur_object = get_object_or_404(Release, pk=pk)
+        file_data = cur_object.json_file
+        file_data.open()
+        data = file_data.read()
+        resp = HttpResponse(
+            data, content_type="application/json",
+        )
+        resp["Content-Disposition"] = 'attachment; filename="schema_{0}.json"'.format(
+            cur_object.tag,
+        )
+        return resp
+
+
 ################################################################################
 # REST API
 

@@ -10,4 +10,10 @@
   <li>Number of data files: {{ object.data_files.all|length }}</li>
 </ul>
 
+<p>
+  <a class="btn btn-primary" href="{% url 'release-download-view' object.tag %}">
+    Download ({{ object.json_file.size|filesizeformat }})
+  </a>
+</p>
+
 {% endblock %}

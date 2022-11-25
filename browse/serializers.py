@@ -190,6 +190,17 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
         ]
         ordering = ["-rel_date"]
 
+    def to_representation(self, instance):
+        representation = super(ReleaseSerializer, self).to_representation(instance)
+
+        representation["json_dump"] = reverse(
+            "release-download-view",
+            kwargs={"pk": instance.uuid},
+            request=self.context["request"],
+        )
+
+        return representation
+
 
 class UserSigninSerializer(serializers.Serializer):
 
