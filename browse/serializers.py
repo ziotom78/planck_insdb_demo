@@ -195,7 +195,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
         representation["json_dump"] = reverse(
             "release-download-view",
-            kwargs={"pk": instance.uuid},
+            kwargs={"pk": instance.tag},
             request=self.context["request"],
         )
 

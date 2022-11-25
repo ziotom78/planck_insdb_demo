@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from browse.release_dump import (
+from browse.models import (
     ReleaseDumpConfiguration,
     DumpOutputFormat,
     dump_db_to_json,
