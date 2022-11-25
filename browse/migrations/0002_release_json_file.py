@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('browse', '0001_initial'),
+        ("browse", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='release',
-            name='json_file',
-            field=models.FileField(blank=True, editable=False, help_text='A compressed JSON dump of the release, ready to be downloaded', upload_to=''),
+            model_name="release",
+            name="json_file",
+            field=models.FileField(
+                blank=True,
+                editable=False,
+                help_text="A compressed JSON dump of the release, ready to be downloaded",
+                upload_to="",
+            ),
         ),
     ]
