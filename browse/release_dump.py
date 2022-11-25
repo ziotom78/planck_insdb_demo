@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 import json
+from tempfile import TemporaryDirectory
 from typing import Optional
 
 import yaml
@@ -13,6 +14,7 @@ import git
 
 from instrumentdb import __version__
 
+from django.core.files import File as DjangoFile
 from django.utils import timezone
 from browse.models import (
     Entity,
@@ -298,13 +300,15 @@ def save_schema(
 
 def dump_db_to_json(
     configuration: ReleaseDumpConfiguration, release_tag: Optional[str] = None
-):
+) -> Path:
     """Save the database into a JSON/YAML file
 
     This function creates a output folder and dumps the whole database in it. If
     `release_tag` is set to some string, only the release matching that string
     (e.g., ``v1.3``) will be considered when saving data files. Quantities, entities,
     and format specifications are always saved in full.
+
+    The function returns a ``Path`` object to the schema file that has been created.
     """
 
     configuration.output_folder.mkdir(parents=True, exist_ok=configuration.exist_ok)
@@ -315,8 +319,41 @@ def dump_db_to_json(
     }
     cur_ext = extensions[configuration.output_format]
 
+    output_schema_path = configuration.output_folder / f"schema.{cur_ext}"
     save_schema(
         configuration,
-        configuration.output_folder / f"schema.{cur_ext}",
+        output_schema_path,
         release_tag=release_tag,
     )
+
+    return output_schema_path
+
+
+def update_release_file_dumps(force: bool = False):
+    """
+    Update the field `json_file` for each `Release` object.
+    """
+
+    for cur_release in Release.objects.all():
+        if bool(cur_release.json_file) and (not force):
+            # The JSON dump already exists, and we are not required
+            # to recreate it, so let's skip this release
+            continue
+
+        with TemporaryDirectory() as tempdir:
+            temp_path = Path(tempdir)
+            json_file_path = dump_db_to_json(
+                ReleaseDumpConfiguration(
+                    no_attachments=True,
+                    exist_ok=True,
+                    output_format=DumpOutputFormat.JSON,
+                    output_folder=temp_path,
+                ),
+                release_tag=cur_release.tag,
+            )
+
+            with json_file_path.open("rt") as json_file:
+                cur_release.json_file.save(
+                    name=f"schema_{cur_release.tag}.json",
+                    content=DjangoFile(json_file),
+                )

@@ -398,6 +398,13 @@ class Release(models.Model):
 
     comment = models.CharField(max_length=4096, blank=True, help_text="Free-form text")
 
+    json_file = models.FileField(
+        blank=True,
+        editable=False,
+        upload_to=STORAGE_PATH,
+        help_text="A JSON dump of the release, ready to be downloaded",
+    )
+
 
 class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
