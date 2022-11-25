@@ -172,6 +172,8 @@ Releases
 You can query the list of releases by issuing a ``GET`` command to the
 url http://server/api/releases/. To get information about one release,
 append its name and a slash to it: http://server/api/releases/v0.28/.
+Finally, to download the JSON file for one release (*without* attachments!)
+append ``download/`` to its URL: http://server/api/releases/v0.28/download/.
 
 To create a new release, you must issue a ``POST`` command with a
 JSON record containing these keys:
