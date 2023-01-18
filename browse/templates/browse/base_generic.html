@@ -19,8 +19,9 @@
     <script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/languages/json.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
 
+    {% load static %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">InstrumentDB</a>
+      <a class="navbar-brand" href="#"><img class="img-fluid" src="{% static "browse/LiteBIRD-logo-nega-RGB.png" %}" style="max-width: 6rem"></a>
       <button class="navbar-toggler"
               type="button"
               data-toggle="collapse"
@@ -69,7 +70,7 @@
     </div>
     </nav>
 
-    <div class="container">
+    <div class="container p-4">
       {% block body %}
       <p>This is the body of the page.</p>
       {% endblock %}
