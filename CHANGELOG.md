@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 1.0.0
+
 -   Make the "export" command able to download just one release [#63](https://github.com/ziotom78/instrumentdb/pull/63)
 
 # Version 0.5.1
