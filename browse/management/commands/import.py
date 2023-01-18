@@ -9,7 +9,14 @@ from django.core.files import File
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_aware, make_aware
 from django.core.management.base import BaseCommand, CommandError
-from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
+from browse.models import (
+    Entity,
+    Quantity,
+    DataFile,
+    FormatSpecification,
+    Release,
+    update_release_file_dumps,
+)
 
 
 def spaces(nest_level):
@@ -400,3 +407,5 @@ etc.) will be looked in the directory where this file resides.
             self.create_quantities(schema.get("quantities", []))
             self.create_data_files(schema.get("data_files", []))
             self.create_releases(schema.get("releases", []))
+
+        update_release_file_dumps()

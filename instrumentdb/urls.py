@@ -39,6 +39,7 @@ from browse.views import (
     api_release_view,
     browse_release_view,
     login_request,
+    ReleaseDownloadView,
 )
 
 ################################################################################
@@ -53,7 +54,7 @@ router.register(r"data_files", DataFileViewSet)
 router.register(r"releases", ReleaseViewSet)
 
 urlpatterns = [
-    path("", entity_tree_view, name="entity-list-view"),
+    path("", ReleaseListView.as_view(), name="release-list-view"),
     path("api/", include(router.urls)),
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
@@ -68,10 +69,15 @@ urlpatterns = [
         DataFilePlotDownloadView.as_view(),
         name="data-file-plot-view",
     ),
+    path("entities/", entity_tree_view, name="entity-list-view"),
     path("browse/entities/<pk>/", EntityView.as_view(), name="entity-view"),
     path("browse/quantities/<pk>/", QuantityView.as_view(), name="quantity-view"),
-    path("browse/releases/", ReleaseListView.as_view(), name="release-list-view"),
     path("browse/releases/<pk>/", ReleaseView.as_view(), name="release-view"),
+    path(
+        "browse/releases/<pk>/download/",
+        ReleaseDownloadView.as_view(),
+        name="release-download-view",
+    ),
     path(
         "browse/format_specs/",
         FormatSpecificationListView.as_view(),

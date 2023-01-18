@@ -3,16 +3,35 @@
 
 {% block body %}
 
-<h1>Releases</h1>
+<h1>IMO Releases</h1>
 
 <div class="list-group">
-  <ul class="list-group list-group-flush">
-    {% for obj in object_list %}
-    <li class="list-group-item">
-        <a href="{% url 'release-view' obj.tag %}">{{obj.tag}} ({{obj.rel_date}})</a>
-    </li>
-    {% endfor %}
-  </ul>
+  <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+          <th scope="col">Version</th>
+          <th scope="col">Date</th>
+          <th scope="col">Comment</th>
+          <th scope="col">JSON file</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for obj in object_list %}
+      <tr>
+          <th scope="row">
+              <a href="{% url 'release-view' obj.tag %}">{{ obj.tag }}</a>
+          </th>
+          <td>{{ obj.rel_date }}</td>
+          <td>{{ obj.comment }}</td>
+          <td>
+              <a class="btn btn-primary" href="{% url 'release-download-view' obj.tag %}">
+                Download ({{ obj.json_file.size|filesizeformat }})
+              </a>
+          </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+  </table>
 </div>
 
 {% endblock %}

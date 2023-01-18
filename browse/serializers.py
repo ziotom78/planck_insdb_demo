@@ -142,8 +142,14 @@ class DataFileSerializer(serializers.HyperlinkedModelSerializer):
             "release_tags",
         ]
         extra_kwargs = {
-            "file_data": { "max_length": 512, "allow_empty_file": True, },
-            "plot_file": { "max_length": 512, "allow_empty_file": True, },
+            "file_data": {
+                "max_length": 512,
+                "allow_empty_file": True,
+            },
+            "plot_file": {
+                "max_length": 512,
+                "allow_empty_file": True,
+            },
         }
 
     def to_representation(self, instance):
@@ -183,6 +189,17 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             "data_files",
         ]
         ordering = ["-rel_date"]
+
+    def to_representation(self, instance):
+        representation = super(ReleaseSerializer, self).to_representation(instance)
+
+        representation["json_dump"] = reverse(
+            "release-download-view",
+            kwargs={"pk": instance.tag},
+            request=self.context["request"],
+        )
+
+        return representation
 
 
 class UserSigninSerializer(serializers.Serializer):

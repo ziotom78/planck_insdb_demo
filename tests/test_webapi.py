@@ -92,7 +92,7 @@ def create_data_file_spec(
 
 
 def create_release_spec(client, tag, comment="", data_files=[]):
-    "Create a DataFile object and return the response"
+    "Create a Release object and return the response"
 
     url = reverse("release-list")
 
