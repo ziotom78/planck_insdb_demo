@@ -38,7 +38,7 @@ env.read_envfile()
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-STORAGE_PATH = Path(env("STORAGE_PATH"))
+MEDIA_ROOT = Path(env("STORAGE_PATH"))
 
 # Application definition
 

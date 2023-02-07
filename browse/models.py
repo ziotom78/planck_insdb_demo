@@ -54,8 +54,6 @@ from rest_framework.authtoken.models import Token
 
 from instrumentdb import __version__
 
-from instrumentdb.settings import STORAGE_PATH
-
 FileType = namedtuple(
     "ImageFileType",
     [
@@ -204,7 +202,8 @@ def format_spec_directory_path(instance, filename):
     true_file_name = instance.doc_file_name
     if not true_file_name:
         true_file_name = ext
-    return STORAGE_PATH / "format_spec" / f"{instance.uuid}_{true_file_name}"
+
+    return Path("format_spec") / f"{instance.uuid}_{true_file_name}"
 
 
 class FormatSpecification(models.Model):
@@ -292,12 +291,12 @@ class Quantity(models.Model):
 
 
 def data_file_directory_path(instance, filename):
-    return STORAGE_PATH / "data_files" / f"{instance.uuid}_{instance.name}"
+    return Path("data_files") / f"{instance.uuid}_{instance.name}"
 
 
 def plot_file_directory_path(instance, filename):
     ext = MIME_TO_IMAGE_EXTENSION[instance.plot_mime_type.split(";")[0]]
-    return STORAGE_PATH / "plot_files" / f"{instance.uuid}_{instance.name}.{ext}"
+    return Path("plot_files") / f"{instance.uuid}_{instance.name}.{ext}"
 
 
 class DataFile(models.Model):
@@ -411,7 +410,7 @@ class Release(models.Model):
     json_file = models.FileField(
         blank=True,
         editable=False,
-        upload_to=STORAGE_PATH,
+        upload_to="",
         help_text="A JSON dump of the release, ready to be downloaded",
     )
 
