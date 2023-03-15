@@ -6,6 +6,7 @@ from pathlib import Path
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import utc
@@ -141,7 +142,7 @@ class DataFilePlotDownloadView(View):
 ###########################################################################
 
 
-class ReleaseListView(ListView):
+class ReleaseListView(LoginRequiredMixin, ListView):
     model = Release
 
     ordering = ["-tag"]
