@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 1.0.1
+
 -   Prevent code crashes when the storage directory is outside the source path [#69](https://github.com/ziotom78/instrumentdb/pull/69)
 
 # Version 1.0.0
