@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 1.0.2
+
 -   Fix permissions in the Home page [#71](https://github.com/ziotom78/instrumentdb/pull/71)
 
 # Version 1.0.1
