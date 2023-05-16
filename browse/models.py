@@ -478,6 +478,7 @@ class DumpOutputFormat(Enum):
 @dataclass
 class ReleaseDumpConfiguration:
     no_attachments: bool
+    only_tree: bool
     exist_ok: bool
     output_format: DumpOutputFormat
     output_folder: Path
@@ -720,11 +721,11 @@ def save_schema(
             ("entities", dump_entity_tree(configuration, Entity.objects.root_nodes())),
             (
                 "format_specifications",
-                dump_specifications(configuration, FormatSpecification.objects.all()),
+                {} if configuration.only_tree else dump_specifications(configuration, FormatSpecification.objects.all()),
             ),
             ("quantities", dump_quantities(configuration, Quantity.objects.all())),
-            ("data_files", dump_data_files(configuration, data_files)),
-            ("releases", dump_releases(configuration, release_tag)),
+            ("data_files", {} if configuration.only_tree else dump_data_files(configuration, data_files)),
+            ("releases", {} if configuration.only_tree else dump_releases(configuration, release_tag)),
         ]
     )
 
