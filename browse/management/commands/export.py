@@ -23,6 +23,11 @@ class Command(BaseCommand):
             help="Do not save data files, only the JSON file",
         )
         parser.add_argument(
+            "--only-tree",
+            action="store_true",
+            help="Only include entities and quantities in the JSON file",
+        )
+        parser.add_argument(
             "--json",
             default=True,
             action="store_true",
@@ -65,6 +70,7 @@ If the folder does not exist, it will be created.""",
                 output_format=DumpOutputFormat.JSON
                 if options["json"]
                 else DumpOutputFormat.YAML,
+                only_tree=options["only_tree"],
                 output_folder=Path(options["output_path"]),
             ),
             release_tag=options["release"],
