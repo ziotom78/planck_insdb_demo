@@ -1,5 +1,7 @@
 # HEAD
 
+-   Stop using the old `uuid` external package [#79](https://github.com/ziotom78/instrumentdb/pull/79)
+
 -   Add the ability to enable logging [#78](https://github.com/ziotom78/instrumentdb/pull/78)
 
 -   Add the `--only-tree` switch to the `export` command [#77](https://github.com/ziotom78/instrumentdb/pull/77)

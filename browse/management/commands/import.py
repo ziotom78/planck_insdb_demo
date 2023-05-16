@@ -35,8 +35,8 @@ def build_query_from_uuid_or_name(key, name_field="name"):
     """
 
     try:
-        _ = UUID(key, version=4)
-        query = {"uuid": key}
+        uuid = UUID(key)
+        query = {"uuid": uuid}
     except ValueError:
         query = {name_field: key}
 
@@ -54,8 +54,9 @@ class Command(BaseCommand):
             uuid = entity_dict.get("uuid")
 
             if uuid:
+                uuid = UUID(uuid)
                 self.stdout.write(
-                    spaces(nest_level) + f"Entity {cur_entity_name} ({uuid[0:6]})"
+                    spaces(nest_level) + f"Entity {cur_entity_name} ({uuid.hex[0:6]})"
                 )
             else:
                 self.stdout.write(spaces(nest_level) + f"Entity {cur_entity_name}")
@@ -96,13 +97,15 @@ class Command(BaseCommand):
         for spec_dict in specs:
             document_ref = spec_dict.get("document_ref")
             uuid = spec_dict.get("uuid")
-            if self.no_overwrite and FormatSpecification.objects.filter(uuid=uuid):
+            if uuid:
+                uuid = UUID(uuid)
+
+            if self.no_overwrite and uuid and FormatSpecification.objects.filter(uuid=uuid):
                 self.stdout.write(
                     f"Format specification {document_ref} already exists in the database"
                 )
                 continue
 
-            uuid = spec_dict.get("uuid")
             doc_file_name = spec_dict.get("doc_file")
 
             if doc_file_name:
@@ -123,7 +126,7 @@ class Command(BaseCommand):
 
             if uuid:
                 self.stdout.write(
-                    f'Format specification "{document_ref}" ({uuid[0:6]}, {file_path})'
+                    f'Format specification "{document_ref}" ({uuid.hex[0:6]}, {file_path})'
                 )
             else:
                 self.stdout.write(
@@ -157,6 +160,7 @@ class Command(BaseCommand):
             name = quantity_dict.get("name")
             uuid = quantity_dict.get("uuid")
             if uuid:
+                uuid = UUID(uuid)
                 if self.no_overwrite and Quantity.objects.filter(uuid=uuid):
                     self.stdout.write(
                         spaces(nest_level)
@@ -164,7 +168,7 @@ class Command(BaseCommand):
                     )
                     continue
 
-                self.stdout.write(spaces(nest_level) + f"Quantity {name} ({uuid[0:6]})")
+                self.stdout.write(spaces(nest_level) + f"Quantity {name} ({uuid.hex[0:6]})")
             else:
                 self.stdout.write(spaces(nest_level) + f"Quantity {name}")
 
@@ -180,7 +184,7 @@ class Command(BaseCommand):
                 except Entity.DoesNotExist:
                     raise CommandError(
                         f"parent {parent_uuid[0:6]} for {name} "
-                        f"({uuid[0:6]}) does not exist"
+                        f"({uuid.hex[0:6]}) does not exist"
                     )
 
             format_spec_ref = quantity_dict.get("format_spec")
@@ -195,7 +199,7 @@ class Command(BaseCommand):
                 except FormatSpecification.DoesNotExist:
                     self.stderr.write(
                         f"Error, format specification {format_spec_ref} "
-                        f"for quantity {name} ({uuid[0:6]}) does not exist"
+                        f"for quantity {name} ({uuid.hex[0:6]}) does not exist"
                     )
 
             if self.dry_run:
@@ -223,7 +227,10 @@ class Command(BaseCommand):
         for data_file_dict in data_files:
             name = data_file_dict.get("name")
             uuid = data_file_dict.get("uuid")
-            if self.no_overwrite and DataFile.objects.filter(uuid=uuid):
+            if uuid:
+                uuid = UUID(uuid)
+
+            if self.no_overwrite and uuid and DataFile.objects.filter(uuid=uuid):
                 self.stdout.write(
                     spaces(nest_level)
                     + f"Data file {name} already exists in the database"
@@ -242,12 +249,12 @@ class Command(BaseCommand):
                     upload_date = make_aware(upload_date)
             except ValueError as exc:
                 raise CommandError(
-                    f"invalid upload date for data file {name} ({uuid[0:6]}): {exc}"
+                    f"invalid upload date for data file {name} ({uuid.hex[0:6]}): {exc}"
                 )
 
             if not upload_date:
                 raise CommandError(
-                    f"no upload date specified for data file {name} ({uuid[0:6]})"
+                    f"no upload date specified for data file {name} ({uuid.hex[0:6]})"
                 )
 
             if filename:
@@ -278,7 +285,7 @@ class Command(BaseCommand):
 
             if uuid:
                 self.stdout.write(
-                    spaces(nest_level) + f'Data file "{name}" ({uuid[0:6]}, {filename})'
+                    spaces(nest_level) + f'Data file "{name}" ({uuid.hex[0:6]}, {filename})'
                 )
             else:
                 self.stdout.write(
