@@ -280,7 +280,7 @@ class Quantity(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({str(self.uuid)[0:8]})"
+        return f"{self.name} ({self.uuid.hex[0:8]})"
 
     class Meta:
         verbose_name_plural = "quantities"
@@ -368,7 +368,7 @@ class DataFile(models.Model):
     comment = models.TextField(max_length=4096, blank=True, help_text="Free-form notes")
 
     def __str__(self):
-        return f"{self.name} ({str(self.uuid)[0:8]})"
+        return f"{self.name} ({self.uuid.hex[0:8]})"
 
     class Meta:
         # When querying *all* the DataFile objects in a database, the
@@ -426,6 +426,7 @@ class Release(models.Model):
             json_file_path = dump_db_to_json(
                 ReleaseDumpConfiguration(
                     no_attachments=True,
+                    only_tree=False,
                     exist_ok=True,
                     output_format=DumpOutputFormat.JSON,
                     output_folder=temp_path,
