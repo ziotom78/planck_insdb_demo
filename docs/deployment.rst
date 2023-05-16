@@ -13,3 +13,15 @@ file. Here are the key values that you should modify:
 
 - Turn on ``LOGGING`` and specify a path where logging messages should be saved using the field
   ``LOG_FILE_PATH``; be sure that the directory where you save this file is writable.
+
+- Set up the logging level according to your tastes, using the field ``LOG_LEVEL``. Valid values are:
+
+  1. ``DEBUG``
+  2. ``INFO``
+  3. ``WARNING``
+
+As an example, here is the section of a ``.env`` file where logging is configured::
+
+    LOGGING=on
+    LOG_FILE_PATH=/var/log/instrumentdb/instrumentdb.log
+    LOG_LEVEL=INFO
