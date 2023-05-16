@@ -1,5 +1,7 @@
 # HEAD
 
+-   Add the `--only-tree` switch to the `export` command [#77](https://github.com/ziotom78/instrumentdb/pull/77)
+
 -   Remove LiteBIRD-related stuff [#76](https://github.com/ziotom78/instrumentdb/pull/76)
 
 # Version 1.0.2
