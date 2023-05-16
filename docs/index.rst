@@ -15,6 +15,7 @@ Welcome to InstrumentDB's documentation!
    tutorial
    releases
    webapi
+   deployment
    
 Indices and tables
 ==================

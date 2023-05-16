@@ -40,6 +40,31 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 MEDIA_ROOT = Path(env("STORAGE_PATH"))
 
+if env.bool("LOGGING"):
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': env("LOG_LEVEL"),
+                'class': 'logging.FileHandler',
+                'filename': env("LOG_FILE_PATH"),
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': env("LOG_LEVEL"),
+                'propagate': True,
+            },
+        },
+    }
+
+    # Ensure that the directory where the log file is to be create exists
+    log_file_path = Path(LOGGING["handlers"]["file"]["filename"])
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+
 # Application definition
 
 INSTALLED_APPS = [
