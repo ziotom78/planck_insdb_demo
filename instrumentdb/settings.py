@@ -41,28 +41,54 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 MEDIA_ROOT = Path(env("STORAGE_PATH"))
 
 if env.bool("LOGGING"):
+    log_file_path = env("LOG_FILE_PATH", default="")
+    formatter = env("LOG_FORMATTER", default="brief")
+
+    if log_file_path != "":
+        log_file_path = Path(log_file_path)
+        # Ensure that the directory where the log file is to be created exists
+        log_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        log_handler = {
+            "file": {
+                "level": env("LOG_LEVEL"),
+                "class": "logging.FileHandler",
+                "filename": log_file_path,
+                "formatter": formatter,
+            },
+        }
+
+    else:
+        log_handler = {
+            "console": {
+                "level": env("LOG_LEVEL"),
+                "class": "logging.StreamHandler",
+                "formatter": formatter,
+            },
+        }
+
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': env("LOG_LEVEL"),
-                'class': 'logging.FileHandler',
-                'filename': env("LOG_FILE_PATH"),
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": log_handler,
+        "formatters": {
+            "brief": {
+                "format": "{levelname} {asctime} {message}",
+                "style": "{",
+            },
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': env("LOG_LEVEL"),
-                'propagate': True,
+        "loggers": {
+            "django": {
+                "handlers": list(log_handler.keys()),
+                "level": env("LOG_LEVEL"),
+                "propagate": True,
             },
         },
     }
-
-    # Ensure that the directory where the log file is to be create exists
-    log_file_path = Path(LOGGING["handlers"]["file"]["filename"])
-    log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 # Application definition
@@ -89,7 +115,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.gzip.GZipMiddleware"
+    "django.middleware.gzip.GZipMiddleware",
 ]
 
 ROOT_URLCONF = "instrumentdb.urls"
