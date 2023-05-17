@@ -203,6 +203,5 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserSigninSerializer(serializers.Serializer):
-
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)

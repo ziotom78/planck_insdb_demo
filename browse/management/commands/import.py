@@ -100,7 +100,11 @@ class Command(BaseCommand):
             if uuid:
                 uuid = UUID(uuid)
 
-            if self.no_overwrite and uuid and FormatSpecification.objects.filter(uuid=uuid):
+            if (
+                self.no_overwrite
+                and uuid
+                and FormatSpecification.objects.filter(uuid=uuid)
+            ):
                 self.stdout.write(
                     f"Format specification {document_ref} already exists in the database"
                 )
@@ -168,7 +172,9 @@ class Command(BaseCommand):
                     )
                     continue
 
-                self.stdout.write(spaces(nest_level) + f"Quantity {name} ({uuid.hex[0:6]})")
+                self.stdout.write(
+                    spaces(nest_level) + f"Quantity {name} ({uuid.hex[0:6]})"
+                )
             else:
                 self.stdout.write(spaces(nest_level) + f"Quantity {name}")
 
@@ -285,7 +291,8 @@ class Command(BaseCommand):
 
             if uuid:
                 self.stdout.write(
-                    spaces(nest_level) + f'Data file "{name}" ({uuid.hex[0:6]}, {filename})'
+                    spaces(nest_level)
+                    + f'Data file "{name}" ({uuid.hex[0:6]}, {filename})'
                 )
             else:
                 self.stdout.write(

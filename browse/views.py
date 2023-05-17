@@ -341,7 +341,6 @@ def browse_release_view(request, rel_name, reference):
     (AllowAny,)
 )  # here we specify permission by default we set IsAuthenticated
 def login_request(request):
-
     login_serializer = UserSigninSerializer(
         data=request.data, context={"request": request}
     )

@@ -722,11 +722,25 @@ def save_schema(
             ("entities", dump_entity_tree(configuration, Entity.objects.root_nodes())),
             (
                 "format_specifications",
-                {} if configuration.only_tree else dump_specifications(configuration, FormatSpecification.objects.all()),
+                {}
+                if configuration.only_tree
+                else dump_specifications(
+                    configuration, FormatSpecification.objects.all()
+                ),
             ),
             ("quantities", dump_quantities(configuration, Quantity.objects.all())),
-            ("data_files", {} if configuration.only_tree else dump_data_files(configuration, data_files)),
-            ("releases", {} if configuration.only_tree else dump_releases(configuration, release_tag)),
+            (
+                "data_files",
+                {}
+                if configuration.only_tree
+                else dump_data_files(configuration, data_files),
+            ),
+            (
+                "releases",
+                {}
+                if configuration.only_tree
+                else dump_releases(configuration, release_tag),
+            ),
         ]
     )
 
