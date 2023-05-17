@@ -22,9 +22,15 @@ file. Here are the key values that you should modify:
   2. ``INFO``
   3. ``WARNING``
 
-As an example, here is the section of a ``.env`` file where logging is configured::
+  As an example, here is the section of a ``.env`` file where logging is configured::
 
     LOGGING=on
     LOG_FILE_PATH=/var/log/instrumentdb/instrumentdb.log
     LOG_FORMATTER=verbose
     LOG_LEVEL=INFO
+
+- Set up a folder where to keep static files, e.g., ``/var/www/static``, and specify its path in the
+  ``.env`` file, under the name ``STATIC_PATH``. Then, every time you update the site, be sure to
+  run ``python3 manage.py collectstatic``, so that the path is filled with static files (images, CSS, etc.).
+  You should make your webserver publish this folder under the URL ``/static``; see the `Django documentation
+  <https://docs.djangoproject.com/en/4.1/howto/deployment/wsgi/modwsgi/#serving-files>`_ for an example.
