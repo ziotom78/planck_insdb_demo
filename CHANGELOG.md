@@ -1,5 +1,7 @@
 # HEAD
 
+-   Add the ability to configure where to keep static files [#82](https://github.com/ziotom78/instrumentdb/pull/82)
+
 -   Add the ability to send log messages to the console [#80](https://github.com/ziotom78/instrumentdb/pull/80)
 
 -   Stop using the old `uuid` external package [#79](https://github.com/ziotom78/instrumentdb/pull/79)
