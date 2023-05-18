@@ -1,5 +1,7 @@
 # HEAD
 
+-   Make the code easier to customize [#83](https://github.com/ziotom78/instrumentdb/pull/83)
+
 -   Add the ability to send log messages to the console [#80](https://github.com/ziotom78/instrumentdb/pull/80)
 
 -   Stop using the old `uuid` external package [#79](https://github.com/ziotom78/instrumentdb/pull/79)
