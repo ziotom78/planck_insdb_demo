@@ -24,36 +24,40 @@ The way it is supposed to be used is the following:
 """
 
 
-def create_entity_listview_context(context):
+# This is used to prepare the context for the template
+# borwse/templates/browse/entity_detail.html
+# The field context["object"] is the instance the Entity class
+def create_entity_view_context(context):
     """Create the context to render a :class:`EntityListView`"""
     pass
 
 
+# This is used to prepare the context for the template
+# borwse/templates/browse/quantity_detail.html
+# The field context["object"] is the instance the Quantity class
 def create_quantity_view_context(context):
     """Create the context to render a :class:`QuantityView`"""
     pass
 
 
-def create_quantity_listview_context(context):
-    """Create the context to render a :class:`QuantityListView`"""
-    pass
-
-
+# This is used to prepare the context for the template
+# borwse/templates/browse/datafile_detail.html
+# The field context["object"] is the instance the DataFile class
 def create_datafile_view_context(context):
     """Create the context to render a :class:`DataFileView`"""
     pass
 
 
-def create_datafile_listview_context(context):
-    """Create the context to render a :class:`DataFileListView`"""
-    pass
-
-
+# This is used to prepare the context for the template
+# borwse/templates/browse/release_detail.html
+# The field context["object"] is the instance the Release class
 def create_release_view_context(context):
     """Create the context to render a :class:`ReleaseView`"""
     pass
 
 
+# This is used to prepare the context for the template
+# borwse/templates/browse/release_list.html
 def create_release_listview_context(context):
     """Create the context to render a :class:`ReleaseListView`"""
     pass
