@@ -65,27 +65,46 @@ def entity_tree_view(request):
 class EntityView(DetailView):
     model = Entity
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        from .custom import create_entity_view_context
+
+        create_entity_view_context(context)
+
+        return context
+
 
 ###########################################################################
-
-
-class QuantityListView(ListView):
-    model = Quantity
 
 
 class QuantityView(DetailView):
     model = Quantity
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        from .custom import create_quantity_view_context
+
+        create_quantity_view_context(context)
+
+        return context
+
 
 ###########################################################################
 
 
-class DataFileListView(ListView):
-    model = DataFile
-
-
 class DataFileView(DetailView):
     model = DataFile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        from .custom import create_datafile_view_context
+
+        create_datafile_view_context(context)
+
+        return context
 
 
 class FormatSpecificationListView(ListView):
@@ -155,6 +174,10 @@ class ReleaseView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        from .custom import create_release_view_context
+
+        create_release_view_context(context)
 
         return context
 
