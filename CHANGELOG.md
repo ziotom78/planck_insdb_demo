@@ -1,5 +1,7 @@
 # HEAD
 
+# Version 1.1.0
+
 -   Make the code easier to customize [#83](https://github.com/ziotom78/instrumentdb/pull/83)
 
 -   Add the ability to send log messages to the console [#80](https://github.com/ziotom78/instrumentdb/pull/80)
