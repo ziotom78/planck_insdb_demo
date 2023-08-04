@@ -38,6 +38,7 @@ from typing import Optional
 import git
 import json
 import yaml
+from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
@@ -163,6 +164,18 @@ IMAGE_FILE_TYPES = [
 # MIME_TO_IMAGE_EXTENSION["image/tiff"] == "tif"
 MIME_TO_DOC_EXTENSION = {x.mime_type: x.file_extension for x in DOCUMENT_FILE_TYPES}
 MIME_TO_IMAGE_EXTENSION = {x.mime_type: x.file_extension for x in IMAGE_FILE_TYPES}
+
+
+def _validate_json(value):
+    """Check that `value` is a valid JSON record"""
+
+    try:
+        json.loads(value)
+    except json.JSONDecodeError as err:
+        raise ValidationError(
+            'Invalid JSON: "%(value)s", reason: %(err)s',
+            params={"value": value, "err": str(err)},
+        )
 
 
 class Entity(MPTTModel):
@@ -300,7 +313,6 @@ class DataFile(models.Model):
     upload_date = models.DateTimeField(
         "date when the file was uploaded",
         default=timezone.now,
-        editable=False,
         help_text="Date when the file was added to the database",
     )
     metadata = models.TextField(
@@ -308,9 +320,10 @@ class DataFile(models.Model):
         max_length=32768,
         blank=True,
         help_text="JSON record containing metadata for the file",
+        validators=[_validate_json],
     )
     file_data = models.FileField(
-        "File",
+        "file",
         blank=True,
         upload_to=data_file_directory_path,
         help_text="File contents (when present)",
@@ -333,7 +346,7 @@ class DataFile(models.Model):
         + "produce this data file",
     )
     plot_file = models.FileField(
-        "Image file",
+        "image file",
         blank=True,
         upload_to=plot_file_directory_path,
         help_text="Plot of the data in the file (optional)",
