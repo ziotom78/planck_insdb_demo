@@ -166,7 +166,7 @@ MIME_TO_DOC_EXTENSION = {x.mime_type: x.file_extension for x in DOCUMENT_FILE_TY
 MIME_TO_IMAGE_EXTENSION = {x.mime_type: x.file_extension for x in IMAGE_FILE_TYPES}
 
 
-def _validate_json(value):
+def validate_json(value):
     """Check that `value` is a valid JSON record"""
 
     try:
@@ -198,6 +198,11 @@ class Entity(MPTTModel):
 
 
 def format_spec_directory_path(instance, filename):
+    """This is called by the FileField of a format spec
+
+    It returns the path where to save a format specification
+    """
+
     # The ".split" trick enables proper treatment of MIME types like
     # "text/markdown; charset=UTF-8", because it removes what comes
     # after the ";"
@@ -320,7 +325,7 @@ class DataFile(models.Model):
         max_length=32768,
         blank=True,
         help_text="JSON record containing metadata for the file",
-        validators=[_validate_json],
+        validators=[validate_json],
     )
     file_data = models.FileField(
         "file",
@@ -447,7 +452,7 @@ class Release(models.Model):
         return result
 
 
-###################################################################################################
+############################################################################
 
 
 class DumpOutputFormat(Enum):
