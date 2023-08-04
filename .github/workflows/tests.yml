@@ -39,9 +39,13 @@ jobs:
 
       - name: "Create a configuration file for Django"
         run: |
+          mkdir -p /db
           cp .env.example .env
           sed -i 's/SECRET_KEY=""/SECRET_KEY="deadmeat"/g' .env
-          sed -i 's/LOG_FILE_PATH=.*/LOG_FILE_PATH=mylog.txt/g' .env
+          sed -i 's/LOG_FILE_PATH=.*/LOG_FILE_PATH=\/db\/mylog.txt/g' .env
+          sed -i 's/STORAGE_PATH=.*/STORAGE_PATH=\/db\/storage/g' .env
+          sed -i 's/STORAGE_PATH=.*/DATABASE_URL=\/db\/storage\/instrumentdb.sqlite3/g' .env
+          sed -i 's/STATIC_PATH=.*/STORAGE_PATH=\/db\/storage\/static/g' .env
           cat .env
 
       - name: "Run tests"
