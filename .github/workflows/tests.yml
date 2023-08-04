@@ -23,15 +23,19 @@ jobs:
       - name: "Upgrade pip"
         run: pip install --upgrade pip
 
-      - name: "Install Poetry"
-        run: pip install poetry
-
-      - name: "Export dependencies from Poetry and install them using pip"
+      - name: "Install Poetry and export dependencies to requirements.txt"
         run: |
+          export POETRY_HOME=/opt/poetry
+          python3 -m venv $POETRY_HOME
+          $POETRY_HOME/bin/pip install poetry==1.5.1
+          $POETRY_HOME/bin/poetry --version
           poetry export --without-hashes -o requirements.txt
+
+      - name: "Install dependencies using pip"
+        run: |
           pip install -r requirements.txt
 
-      - name: "Check that the code is formatted"
+      - name: "Check that the code is formatted using black"
         run: black --check --diff .
 
       - name: "Run flake8"
