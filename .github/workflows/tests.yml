@@ -8,8 +8,8 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python: [3.9, 3.11]
+        os: [ubuntu-latest]
+        python: [3.89, 3.9, 3.10, 3.11]
 
     steps:
       - name: "Checkout the repository"
@@ -36,6 +36,13 @@ jobs:
 
       - name: "Run flake8"
         run: python3 -m flake8
+
+      - name: "Create a configuration file for Django"
+        run: |
+          cp .env.example .env
+          sed -i 's/SECRET_KEY=""/SECRET_KEY="deadmeat"/g' .env
+          sed -i 's/LOG_FILE_PATH=.*/LOG_FILE_PATH=mylog.txt/g' .env
+          cat .env
 
       - name: "Run tests"
         run: python3 manage.py test
