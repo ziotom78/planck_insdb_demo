@@ -239,7 +239,6 @@ class DataFileTests(APITestCase):
         self.assertEqual(json["metadata"]["a"], 10)
         self.assertEqual(json["metadata"]["b"], "hello")
 
-
     def test_create_datafile_with_wrong_metadata(self):
         """
         Ensure we can create a new DataFile object.

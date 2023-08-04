@@ -5,7 +5,14 @@ import json
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User, Group
-from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release, validate_json
+from browse.models import (
+    Entity,
+    Quantity,
+    DataFile,
+    FormatSpecification,
+    Release,
+    validate_json,
+)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

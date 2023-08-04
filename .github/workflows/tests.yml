@@ -1,0 +1,41 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: [3.9, 3.11]
+
+    steps:
+      - name: "Checkout the repository"
+        uses: actions/checkout@v2
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: "Upgrade pip"
+        run: pip install --upgrade pip
+
+      - name: "Install Poetry"
+        run: pip install poetry
+
+      - name: "Export dependencies from Poetry and install them using pip"
+        run: |
+          poetry export --without-hashes -o requirements.txt
+          pip install -r requirements.txt
+
+      - name: "Check that the code is formatted"
+        run: black --check --diff .
+
+      - name: "Run flake8"
+        run: python3 -m flake8
+
+      - name: "Run tests"
+        run: python3 manage.py test
