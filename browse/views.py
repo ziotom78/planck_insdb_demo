@@ -21,6 +21,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.pagination import PageNumberPagination
 
 import instrumentdb
 from browse.models import Entity, Quantity, DataFile, FormatSpecification, Release
@@ -326,6 +327,12 @@ class DataFileViewSet(viewsets.ModelViewSet):
     serializer_class = DataFileSerializer
 
 
+class ReleasePagination(PageNumberPagination):
+    page_size = 1
+    page_size_query_param = "page_size"
+    max_page_size = 3
+
+
 class ReleaseViewSet(viewsets.ModelViewSet):
     # Enable dots to be used in release tag names. See
     # https://stackoverflow.com/questions/27963899/django-rest-framework-using-dot-in-url
@@ -334,7 +341,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
         instrumentdb.authentication.ExpiringTokenAuthentication,
         SessionAuthentication,
     ]
-    # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = ReleasePagination
 
     def get_permissions(self):
         if self.request.method in ADMIN_ONLY_HTTP_METHODS:
