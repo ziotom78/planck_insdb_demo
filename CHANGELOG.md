@@ -1,5 +1,7 @@
 # HEAD
 
+-   The URL `/api/releases` now uses pagination [#95](https://github.com/ziotom78/instrumentdb/pull/95)
+
 -   The tree of entities is now collapsible [#94](https://github.com/ziotom78/instrumentdb/pull/94)
 
 -   Extend test coverage, fix issues in the code [#93](https://github.com/ziotom78/instrumentdb/pull/93)
