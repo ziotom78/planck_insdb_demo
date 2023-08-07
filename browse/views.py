@@ -382,7 +382,43 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 ################################################################################
 
 
-def release_view(request, rel_name, reference, browse_view=False):
+def navigate_tree_of_entities(url_components: list[str]) -> Entity:
+    cur_obj = get_object_or_404(Entity, name=url_components[0])
+    for comp in url_components[1:-1]:
+        cur_obj = get_object_or_404(cur_obj.get_children(), name=comp)
+
+    last_name = url_components[-1]
+    if last_name.endswith("/"):
+        last_name = last_name[:-1]
+
+    try:
+        return Quantity.objects.get(name=last_name)
+    except Quantity.DoesNotExist:
+        try:
+            return Entity.objects.get(name=last_name)
+        except Entity.DoesNotExist:
+            raise Http404(
+                f"No matches for URL {url_components}, cannot decide "
+                f"whether {last_name} is an entity or a quantity"
+            )
+
+
+def entity_reference_view(request, reference: str):
+    """
+    Access an entity through its path
+
+    If `reference` is `/satellite/LFT`, the result of this
+    function will be a redirect to the
+    """
+    cur_obj = navigate_tree_of_entities(url_components=reference.split("/"))
+
+    if isinstance(cur_obj, Quantity):
+        return redirect("quantity-detail", cur_obj.uuid)
+    else:
+        return redirect("entity-detail", cur_obj.uuid)
+
+
+def release_view(request, rel_name: str, reference: str, browse_view=False):
     # If browse_view is True, redirect to browse/data_files/uuid
     # If browse_view is False, redirect to api/data_files/uuid
 
@@ -400,13 +436,10 @@ def release_view(request, rel_name, reference, browse_view=False):
     #      sequence of entities         quantity
 
     url_components = reference.split("/")
+    cur_obj = navigate_tree_of_entities(url_components=url_components[:-1])
+
     quantity_name = url_components[-1]
-
-    cur_queryset = get_object_or_404(Entity, name=url_components[0])
-    for comp in url_components[1:-1]:
-        cur_queryset = get_object_or_404(cur_queryset.get_children(), name=comp)
-
-    quantity = get_object_or_404(cur_queryset.quantities, name=quantity_name)
+    quantity = get_object_or_404(cur_obj.quantities, name=quantity_name)
     data_file = get_object_or_404(quantity.data_files, release_tags__tag=release.tag)
 
     if browse_view:
