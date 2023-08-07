@@ -1,5 +1,7 @@
 # HEAD
 
+-   Add a new API to access entities and quantities through their path [#98](https://github.com/ziotom78/instrumentdb/pull/98)
+
 -   Make the download of specification documents easier [#97](https://github.com/ziotom78/instrumentdb/pull/97)
 
 -   Implement release documents, support Django 4 [#96](https://github.com/ziotom78/instrumentdb/pull/96)
