@@ -28,6 +28,7 @@ from browse.views import (
     FormatSpecificationListView,
     FormatSpecificationDownloadView,
     QuantityView,
+    ReleaseDocumentDownloadView,
     ReleaseListView,
     ReleaseView,
     UserViewSet,
@@ -81,6 +82,11 @@ urlpatterns = [
         "browse/releases/<pk>/download/",
         ReleaseDownloadView.as_view(),
         name="release-download-view",
+    ),
+    path(
+        "browse/releases/<pk>/document/",
+        ReleaseDocumentDownloadView.as_view(),
+        name="release-document-download-view",
     ),
     path(
         "browse/format_specs/",

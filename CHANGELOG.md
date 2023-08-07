@@ -1,5 +1,7 @@
 # HEAD
 
+-   Implement release documents, support Django 4 [#96](https://github.com/ziotom78/instrumentdb/pull/96)
+
 -   The URL `/api/releases` now uses pagination [#95](https://github.com/ziotom78/instrumentdb/pull/95)
 
 -   The tree of entities is now collapsible [#94](https://github.com/ziotom78/instrumentdb/pull/94)
