@@ -1,5 +1,7 @@
 # HEAD
 
+-   Make the download of specification documents easier [#97](https://github.com/ziotom78/instrumentdb/pull/97)
+
 -   Implement release documents, support Django 4 [#96](https://github.com/ziotom78/instrumentdb/pull/96)
 
 -   The URL `/api/releases` now uses pagination [#95](https://github.com/ziotom78/instrumentdb/pull/95)
