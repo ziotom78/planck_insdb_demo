@@ -43,6 +43,7 @@ from browse.views import (
     login_request,
     ReleaseDownloadView,
     UserView,
+    entity_reference_view,
 )
 
 ################################################################################
@@ -105,6 +106,7 @@ urlpatterns = [
         r"^browse/releases/(?P<rel_name>[\w.-]+)/(?P<reference>[\w./-]+)/$",
         browse_release_view,
     ),
+    re_path(r"^tree/(?P<reference>[\w./-]+)/$", entity_reference_view),
     path("api/login", login_request),
     path("accounts/", include("django.contrib.auth.urls")),
 ]

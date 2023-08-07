@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import json
 from io import StringIO
+from uuid import UUID
 
 from django.urls import reverse
 from rest_framework import status
@@ -169,6 +170,18 @@ class EntityTests(APITestCase):
         self.assertEqual(Entity.objects.count(), 1)
         self.assertEqual(Entity.objects.get().name, "test_entity")
 
+        response = self.client.get("/tree/test_entity/")
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        # Since we got HTTP 302, this is a redirect and we must follow the alias
+        response = self.client.get(response.url)
+        entity_json = response.json()
+        self.assertEqual(UUID(entity_json["uuid"]), Entity.objects.get().uuid)
+
+    def test_look_for_nonexistent_quantity(self):
+        response = self.client.get("/tree/this_entity_does_not_exist")
+        self.assertEqual(response.status_code, status.HTTP_301_MOVED_PERMANENTLY)
+
 
 class QuantityTests(APITestCase):
     def setUp(self):
@@ -195,6 +208,18 @@ class QuantityTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Quantity.objects.count(), 1)
         self.assertEqual(Quantity.objects.get().name, "test_quantity")
+
+        response = self.client.get("/tree/test_entity/test_quantity/")
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        # Since we got HTTP 302, this is a redirect and we must follow the alias
+        response = self.client.get(response.url)
+        quantity_json = response.json()
+        self.assertEqual(UUID(quantity_json["uuid"]), Quantity.objects.get().uuid)
+
+    def test_look_for_nonexistent_quantity(self):
+        response = self.client.get("/tree/test_entity/this_does_not_exist")
+        self.assertEqual(response.status_code, status.HTTP_301_MOVED_PERMANENTLY)
 
 
 class DataFileTests(APITestCase):
@@ -321,7 +346,6 @@ class ReleaseTests(APITestCase):
         # Download the release document
 
         response = self.client.get("/browse/releases/v1.0/document/")
-        print(f"{response.content=}")
         self.assertEqual(response.content, b"Contents of the release document")
 
 
