@@ -118,6 +118,7 @@ def create_release_spec(client, tag, comment="", data_files=[]):
     url = reverse("release-list")
 
     from io import StringIO
+
     release_document = StringIO("Contents of the release document")
     release_document.name = "reldoc.txt"
 
@@ -279,7 +280,6 @@ class ReleaseTests(APITestCase):
             quantity=self.quantity_response.data["url"],
         )
 
-
     def test_create_release(self):
         """
         Ensure we can create a new Release object.
@@ -322,7 +322,7 @@ class ReleaseTests(APITestCase):
 
         response = self.client.get("/browse/releases/v1.0/document/")
         print(f"{response.content=}")
-        self.assertEqual(response.content, b'Contents of the release document')
+        self.assertEqual(response.content, b"Contents of the release document")
 
 
 class AuthenticateTest(APITestCase):

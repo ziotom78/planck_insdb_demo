@@ -206,10 +206,11 @@ class ReleaseDocumentDownloadView(View):
         resp = HttpResponse(data, content_type=cur_object.release_document_mime_type)
 
         resp["Content-Disposition"] = 'filename="{name}{ext}"'.format(
-            name = cur_object.tag,
+            name=cur_object.tag,
             ext=mimetypes.guess_extension(cur_object.release_document_mime_type),
         )
         return resp
+
 
 ###########################################################################
 

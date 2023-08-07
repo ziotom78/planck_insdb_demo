@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('browse', '0003_auto_20230805_1644'),
+        ("browse", "0003_auto_20230805_1644"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='release',
-            name='release_document',
-            field=models.FileField(help_text='Document accompanying the release (optional)', null=True, upload_to=browse.models.release_document_directory_path, verbose_name='release document'),
+            model_name="release",
+            name="release_document",
+            field=models.FileField(
+                help_text="Document accompanying the release (optional)",
+                null=True,
+                upload_to=browse.models.release_document_directory_path,
+                verbose_name="release document",
+            ),
         ),
     ]

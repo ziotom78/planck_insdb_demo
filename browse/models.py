@@ -316,7 +316,10 @@ def plot_file_directory_path(instance, filename):
 
 def release_document_directory_path(instance, filename):
     try:
-        ext = "." + MIME_TO_IMAGE_EXTENSION[instance.release_document_mime_type.split(";")[0]]
+        ext = (
+            "."
+            + MIME_TO_IMAGE_EXTENSION[instance.release_document_mime_type.split(";")[0]]
+        )
     except KeyError:
         logging.warning("unknown MIME type '%s'", instance.release_document_mime_type)
         ext = ""
