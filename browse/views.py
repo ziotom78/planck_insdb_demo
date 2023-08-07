@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from datetime import datetime
+from datetime import timezone
 import mimetypes
 from math import ceil
 from pathlib import Path
@@ -7,10 +9,7 @@ from pathlib import Path
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, Http404
-from django.utils.datetime_safe import datetime
-from django.utils.timezone import utc
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -190,6 +189,27 @@ class DataFilePlotDownloadView(View):
         )
         return resp
 
+
+class ReleaseDocumentDownloadView(View):
+    def get(self, request, pk):
+        "Allow the user to download a release document"
+
+        cur_object = get_object_or_404(Release, pk=pk)
+        release_document_data = cur_object.release_document
+
+        try:
+            release_document_data.open()
+        except ValueError:
+            raise Http404("The release document was not uploaded to the database")
+
+        data = release_document_data.read()
+        resp = HttpResponse(data, content_type=cur_object.release_document_mime_type)
+
+        resp["Content-Disposition"] = 'filename="{name}{ext}"'.format(
+            name = cur_object.tag,
+            ext=mimetypes.guess_extension(cur_object.release_document_mime_type),
+        )
+        return resp
 
 ###########################################################################
 
@@ -422,7 +442,7 @@ def login_request(request):
 
     if not created and not is_token_expired(token):
         # update the created time of the token to keep it valid
-        token.created = datetime.utcnow().replace(tzinfo=utc)
+        token.created = datetime.utcnow().replace(tzinfo=timezone.utc)
         token.save()
 
     # token_expire_handler will check, if the token is expired it will generate new one

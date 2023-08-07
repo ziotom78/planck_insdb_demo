@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-
+import json
 from io import StringIO
 
 from django.urls import reverse
@@ -44,7 +44,6 @@ def create_format_spec(client, document_ref):
 
     response = client.post(
         url,
-        format="json",
         data={
             "document_ref": document_ref,
             "title": "My dummy document",
@@ -75,7 +74,6 @@ def create_quantity_spec(client, name, entity, format_spec, data_files=[]):
 
     response = client.post(
         url,
-        format="json",
         data={
             "name": name,
             "parent_entity": entity,
@@ -95,17 +93,19 @@ def create_data_file_spec(
 
     data_file = StringIO("1,2,3,4,5")
 
+    # Since we are sending "file_data", we cannot use
+    # format="json" here. Because of this, we need to
+    # manually convert `metadata` into a string, otherwise
+    # the `post` method would not be able to send both
+    # the metadata (a nested structure) and the file data.
     response = client.post(
         url,
-        format="json",
         data={
             "name": name,
-            "metadata": metadata,
+            "metadata": metadata if isinstance(metadata, str) else json.dumps(metadata),
             "quantity": quantity,
             "spec_version": spec_version,
             "release_tags": release_tags,
-        },
-        files={
             "file_data": data_file,
         },
     )
@@ -117,15 +117,21 @@ def create_release_spec(client, tag, comment="", data_files=[]):
 
     url = reverse("release-list")
 
+    from io import StringIO
+    release_document = StringIO("Contents of the release document")
+    release_document.name = "reldoc.txt"
+
     response = client.post(
         url,
-        format="json",
         data={
             "tag": tag,
             "comment": comment,
             "data_files": data_files,
+            "release_document_mime_type": "text/plain",
+            "release_document": release_document,
         },
     )
+
     return response
 
 
@@ -273,6 +279,7 @@ class ReleaseTests(APITestCase):
             quantity=self.quantity_response.data["url"],
         )
 
+
     def test_create_release(self):
         """
         Ensure we can create a new Release object.
@@ -295,10 +302,14 @@ class ReleaseTests(APITestCase):
                 "data_files": [self.datafile_response.data["url"]],
             },
         )
+        assert response.status_code == status.HTTP_200_OK
+
         response = self.client.get(rel_url)
         json = response.json()
         self.assertEqual(json["tag"], "v1.0")
         self.assertEqual(len(json["data_files"]), 1)
+        self.assertEqual(json["release_document_mime_type"], "text/plain")
+        self.assertTrue(json["release_document"] is not None)
 
         # Try to access the data file through the release tag
         response = self.client.get(
@@ -306,6 +317,12 @@ class ReleaseTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         assert response.url in self.datafile_response.data["url"]
+
+        # Download the release document
+
+        response = self.client.get("/browse/releases/v1.0/document/")
+        print(f"{response.content=}")
+        self.assertEqual(response.content, b'Contents of the release document')
 
 
 class AuthenticateTest(APITestCase):
