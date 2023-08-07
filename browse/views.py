@@ -5,6 +5,7 @@ from datetime import timezone
 import mimetypes
 from math import ceil
 from pathlib import Path
+from typing import List
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
@@ -382,7 +383,7 @@ class ReleaseViewSet(viewsets.ModelViewSet):
 ################################################################################
 
 
-def navigate_tree_of_entities(url_components: list[str]) -> Entity:
+def navigate_tree_of_entities(url_components: List[str]) -> Entity:
     cur_obj = get_object_or_404(Entity, name=url_components[0])
     for comp in url_components[1:-1]:
         cur_obj = get_object_or_404(cur_obj.get_children(), name=comp)
