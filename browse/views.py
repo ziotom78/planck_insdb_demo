@@ -402,7 +402,7 @@ def navigate_tree_of_entities(url_components: List[str]) -> Entity:
         matching_entries = Entity.objects.filter(name=last_name, parent=cur_obj)
         if len(matching_entries) == 0:
             raise Http404(
-                f"No entity found with name {last_name} in URL {url_components.join('/')}"
+                f"No entity found with name {last_name} in URL {'/'.join(url_components)}"
             )
         if len(matching_entries) > 1:
             raise ValueError(
