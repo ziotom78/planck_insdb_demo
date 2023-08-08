@@ -1,5 +1,7 @@
 # HEAD
 
+-   Make the `export` and `import` commands more robust, fix bugs, and make release documents exported as well [#101](https://github.com/ziotom78/instrumentdb/pull/101)
+
 -   Add the switches `--skip-empty-quantities` and `--skip-empty-entities` to the `export` command [#100](https://github.com/ziotom78/instrumentdb/pull/100)
 
 -   Add a new API to access entities and quantities through their path [#98](https://github.com/ziotom78/instrumentdb/pull/98)
