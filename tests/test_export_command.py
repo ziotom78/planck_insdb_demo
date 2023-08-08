@@ -176,7 +176,7 @@ class TextExport(TestCase):
             plot_mime_type="image/gif",
             comment="Newest data file for subchild2",
         )
-        self.subchild2_file1.dependencies.add(self.subchild1_file2)
+        self.subchild2_file2.dependencies.add(self.subchild1_file2)
         self.subchild2_file2.save()
 
         # Finally, create *two* releases
@@ -241,11 +241,11 @@ class TextExport(TestCase):
             plot_file_path = dest_path / "plot_files"
             self.assertTrue(plot_file_path)
 
-            for cur_data_file, key, value in [
-                (self.subchild1_file1, "subchild1_file_field", 2),
-                (self.subchild1_file2, "subchild1_file_field", 3),
-                (self.subchild2_file1, "subchild2_file_field", 4),
-                (self.subchild2_file2, "subchild2_file_field", 5),
+            for cur_data_file, key, value, dependency in [
+                (self.subchild1_file1, "subchild1_file_field", 2, None),
+                (self.subchild1_file2, "subchild1_file_field", 3, None),
+                (self.subchild2_file1, "subchild2_file_field", 4, self.subchild1_file1),
+                (self.subchild2_file2, "subchild2_file_field", 5, self.subchild1_file2),
             ]:
                 # First check the data files…
 
@@ -257,6 +257,13 @@ class TextExport(TestCase):
                 with cur_data_file_path.open("rt") as inpf:
                     cur_file_contents = json.load(inpf)
                     self.assertEqual(cur_file_contents[key], value)
+
+                if not dependency:
+                    self.assertEqual(len(cur_data_file.dependencies.all()), 0)
+                else:
+                    self.assertEqual(len(cur_data_file.dependencies.all()), 1)
+                    # This call will fail if there is no match or more than one match
+                    _ = cur_data_file.dependencies.get(name=dependency.name)
 
                 # …and then the plot files
 
