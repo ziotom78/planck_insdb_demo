@@ -473,6 +473,7 @@ class Release(models.Model):
                     only_tree=False,
                     exist_ok=True,
                     skip_empty_quantities=False,
+                    skip_empty_entities=False,
                     output_format=DumpOutputFormat.JSON,
                     output_folder=temp_path,
                 ),
