@@ -472,6 +472,8 @@ class Release(models.Model):
                     no_attachments=True,
                     only_tree=False,
                     exist_ok=True,
+                    skip_empty_quantities=False,
+                    skip_empty_entities=False,
                     output_format=DumpOutputFormat.JSON,
                     output_folder=temp_path,
                 ),
@@ -500,6 +502,8 @@ class ReleaseDumpConfiguration:
     no_attachments: bool
     only_tree: bool
     exist_ok: bool
+    skip_empty_entities: bool
+    skip_empty_quantities: bool
     output_format: DumpOutputFormat
     output_folder: Path
 
@@ -579,9 +583,23 @@ def save_attachment(configuration: ReleaseDumpConfiguration, relative_path, file
             outf.write(data)
 
 
-def dump_entity_tree(configuration: ReleaseDumpConfiguration, entities):
+def dump_entity_tree(configuration: ReleaseDumpConfiguration, entities, data_files):
     result = []
     for cur_entity in entities:
+        if configuration.skip_empty_entities:
+            quantities = Quantity.objects.filter(parent_entity=cur_entity)
+            num_of_data_files = 0
+            for cur_quantity in quantities:
+                num_of_data_files += len(
+                    cur_quantity.data_files.filter(uuid__in=data_files.all())
+                )
+
+            if not cur_entity.get_children() and num_of_data_files == 0:
+                logging.info(
+                    f"Skipping {cur_entity.name} as it has no children nor quantities"
+                )
+                continue
+
         # We use a OrderedDict here because otherwise "children" would
         # be the first key in the JSON file, and this would make the
         # file harder to read
@@ -593,7 +611,9 @@ def dump_entity_tree(configuration: ReleaseDumpConfiguration, entities):
         children = cur_entity.get_children()
         if children:
             # Descend the tree recursively
-            new_element["children"] = dump_entity_tree(configuration, children)
+            new_element["children"] = dump_entity_tree(
+                configuration, children, data_files
+            )
 
         result.append(new_element)
 
@@ -626,9 +646,18 @@ def dump_specifications(configuration: ReleaseDumpConfiguration, specs):
     return result
 
 
-def dump_quantities(configuration: ReleaseDumpConfiguration, quantities):
+def dump_quantities(configuration: ReleaseDumpConfiguration, quantities, data_files):
     result = []
     for cur_quantity in quantities:
+        if configuration.skip_empty_quantities and (
+            len(cur_quantity.data_files.filter(uuid__in=data_files.all())) < 1
+        ):
+            # This quantity has no data files
+            logging.info(
+                "Skipping quantity '%s' as it has no data files", cur_quantity.name
+            )
+            continue
+
         cur_entry = OrderedDict(
             [
                 ("uuid", Quoted(cur_quantity.uuid)),
@@ -738,7 +767,12 @@ def save_schema(
                     ]
                 ),
             ),
-            ("entities", dump_entity_tree(configuration, Entity.objects.root_nodes())),
+            (
+                "entities",
+                dump_entity_tree(
+                    configuration, Entity.objects.root_nodes(), data_files=data_files
+                ),
+            ),
             (
                 "format_specifications",
                 {}
@@ -747,7 +781,14 @@ def save_schema(
                     configuration, FormatSpecification.objects.all()
                 ),
             ),
-            ("quantities", dump_quantities(configuration, Quantity.objects.all())),
+            (
+                "quantities",
+                dump_quantities(
+                    configuration=configuration,
+                    quantities=Quantity.objects.all(),
+                    data_files=data_files,
+                ),
+            ),
             (
                 "data_files",
                 {}
