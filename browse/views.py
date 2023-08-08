@@ -143,13 +143,9 @@ class FormatSpecificationDownloadView(View):
         data = file_data.read()
         resp = HttpResponse(data, content_type=cur_object.doc_mime_type)
 
-        if cur_object.doc_file_name is not None and cur_object.doc_file_name != "":
-            file_name = Path(cur_object.doc_file_name).name
-        else:
-            file_name = cur_object.document_ref + mimetypes.guess_extension(
-                cur_object.doc_mime_type
-            )
-        resp["Content-Disposition"] = 'filename="{0}"'.format(file_name)
+        resp["Content-Disposition"] = 'filename="{0}"'.format(
+            cur_object.get_sensible_file_name()
+        )
         return resp
 
 
