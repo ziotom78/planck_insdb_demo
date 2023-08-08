@@ -95,5 +95,3 @@ If the folder does not exist, it will be created.""",
             ),
             release_tag=options["release"],
         )
-
-        # TODO: export format specifications, release documents, data files, etc.
