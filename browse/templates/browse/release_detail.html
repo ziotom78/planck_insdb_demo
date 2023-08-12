@@ -24,4 +24,59 @@
   </a>
 </p>
 
+{% if LFI %}
+<h2>LFI</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <th>Detector</th>
+    <th>φ [°]</th>
+    <th>θ [°]</th>
+    <th>ψ [°]</th>
+    <th>FWHM [arcmin]</th>
+    <th>Ellipticity</th>
+    </thead>
+    <tbody>
+    {% for cur_obj in LFI %}
+    <tr>
+    <td>{{ cur_obj.detector }}</td>
+    <td>{{ cur_obj.phi_uv_deg }}</td>
+    <td>{{ cur_obj.theta_uv_deg }}</td>
+    <td>{{ cur_obj.psi_uv_deg }}</td>
+    <td>{{ cur_obj.fwhm_arcmin }}</td>
+    <td>{{ cur_obj.ellipticity }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if HFI %}
+<h2>HFI</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <th>Detector</th>
+    <th>φ [°]</th>
+    <th>θ [°]</th>
+    <th>ψ [°]</th>
+    <th>FWHM [arcmin]</th>
+    <th>Ellipticity</th>
+    </thead>
+    <tbody>
+    {% for cur_obj in HFI %}
+    <tr>
+    <td>{{ cur_obj.detector }}</td>
+    <td>{{ cur_obj.phi_uv_deg }}</td>
+    <td>{{ cur_obj.theta_uv_deg }}</td>
+    <td>{{ cur_obj.psi_uv_deg }}</td>
+    <td>{{ cur_obj.fwhm_arcmin }}</td>
+    <td>{{ cur_obj.ellipticity }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
 {% endblock %}

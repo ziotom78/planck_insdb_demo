@@ -22,6 +22,9 @@ The way it is supposed to be used is the following:
 
 5. Deploy your fork using a webserver!
 """
+import json
+
+from browse.models import Entity
 
 
 # This is used to prepare the context for the template
@@ -53,7 +56,21 @@ def create_datafile_view_context(context):
 # The field context["object"] is the instance the Release class
 def create_release_view_context(context):
     """Create the context to render a :class:`ReleaseView`"""
-    pass
+    cur_release = context["object"].tag
+
+    for instrument in ("LFI", "HFI"):
+        cur_quantity = Entity.objects.get(name=instrument).quantities.get(name="full_focal_plane")
+
+        data_files = cur_quantity.data_files.filter(release_tags__tag=cur_release)
+        if len(data_files) != 1:
+            continue
+
+        data_file = data_files[0]
+        cur_metadata = json.loads(data_file.metadata)
+
+        context[instrument] = list(cur_metadata.values())
+
+
 
 
 # This is used to prepare the context for the template
