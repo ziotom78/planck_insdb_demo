@@ -24,6 +24,7 @@ coverage = "^7.2.7"
 flake8 = "^6.0.0"
 black = "^23.7.0"
 matplotlib = "^3.7.2"
+django-cleanup = "^8.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
