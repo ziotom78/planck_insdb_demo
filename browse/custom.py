@@ -59,7 +59,9 @@ def create_release_view_context(context):
     cur_release = context["object"].tag
 
     for instrument in ("LFI", "HFI"):
-        cur_quantity = Entity.objects.get(name=instrument).quantities.get(name="full_focal_plane")
+        cur_quantity = Entity.objects.get(name=instrument).quantities.get(
+            name="full_focal_plane"
+        )
 
         data_files = cur_quantity.data_files.filter(release_tags__tag=cur_release)
         if len(data_files) != 1:
@@ -69,8 +71,6 @@ def create_release_view_context(context):
         cur_metadata = json.loads(data_file.metadata)
 
         context[instrument] = list(cur_metadata.values())
-
-
 
 
 # This is used to prepare the context for the template
