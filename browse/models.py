@@ -708,11 +708,13 @@ def dump_data_files(configuration: ReleaseDumpConfiguration, data_files):
                 ("uuid", Quoted(cur_data_file.uuid)),
                 ("name", Quoted(cur_data_file.name)),
                 ("upload_date", Quoted(cur_data_file.upload_date)),
-                ("metadata", json.loads(cur_data_file.metadata)),
                 ("quantity", Quoted(cur_data_file.quantity.uuid)),
                 ("spec_version", Quoted(cur_data_file.spec_version)),
             ]
         )
+
+        if cur_data_file.metadata is not None and cur_data_file.metadata != "":
+            cur_entry["metadata"] = json.loads(cur_data_file.metadata)
 
         if cur_data_file.file_data and (not configuration.no_attachments):
             dest_path = (
