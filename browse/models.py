@@ -786,7 +786,7 @@ def save_schema(
     try:
         this_repo = git.Repo(search_parent_directories=True)
         git_sha = this_repo.head.object.hexsha
-    except git.InvalidGitRepositoryError:
+    except (ValueError, git.InvalidGitRepositoryError):
         git_sha = "unknown"
 
     if release_tag:
