@@ -1,5 +1,7 @@
 # HEAD
 
+-   Better handle missing `metadata` fields in data files [#110](https://github.com/ziotom78/instrumentdb/pull/110)
+
 -   Properly delete files that are no longer referenced in the database [#109](https://github.com/ziotom78/instrumentdb/pull/109)
 
 -   Allow empty metadata in data files when using the RESTful API [#107](https://github.com/ziotom78/instrumentdb/pull/107)
