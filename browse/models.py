@@ -728,7 +728,7 @@ def dump_data_files(configuration: ReleaseDumpConfiguration, data_files):
             dest_path = Path("plot_files") / full_plot_file_path(cur_data_file, "").name
             cur_entry["plot_file"] = Quoted(dest_path)
             cur_entry["plot_mime_type"] = Quoted(cur_data_file.plot_mime_type)
-            save_attachment(configuration, dest_path, cur_data_file.file_data)
+            save_attachment(configuration, dest_path, cur_data_file.plot_file)
 
         if cur_data_file.dependencies:
             cur_entry["dependencies"] = [
