@@ -1,5 +1,7 @@
 # HEAD
 
+-   Fix an error in `manage.py export` when plot files are present [#112](https://github.com/ziotom78/instrumentdb/pull/112)
+
 -   Be more robust against `git`'s output [#111](https://github.com/ziotom78/instrumentdb/pull/111)
 
 -   Better handle missing `metadata` fields in data files [#110](https://github.com/ziotom78/instrumentdb/pull/110)
