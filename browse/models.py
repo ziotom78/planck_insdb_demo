@@ -323,6 +323,12 @@ class Quantity(models.Model):
             "uuid",
         )
 
+    @property
+    def full_path(self):
+        entity = self.parent_entity
+        ancestors = entity.get_ancestors(include_self=True)
+        return "/".join([x.name for x in ancestors]) + "/" + self.name
+
 
 def data_file_directory_path(instance, filename):
     return Path("data_files") / f"{instance.uuid}_{instance.name}"
@@ -439,7 +445,13 @@ class DataFile(models.Model):
     def full_path(self):
         entity = self.quantity.parent_entity
         ancestors = entity.get_ancestors(include_self=True)
-        return "/".join([x.name for x in ancestors]) + "/" + self.name
+        return (
+            "/".join([x.name for x in ancestors])
+            + "/"
+            + self.quantity.name
+            + "/"
+            + self.name
+        )
 
 
 class Release(models.Model):
