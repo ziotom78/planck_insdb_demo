@@ -1,6 +1,8 @@
 # HEAD
 
--   Add the variable `CSRF_TRUSTED_ORIGINS` to the list of fields in the `.env` file [#115](https://github.com/ziotom78/instrumentdb/pull/115)
+# Version 2.0.0
+
+-   **Breaking change** Add the variable `CSRF_TRUSTED_ORIGINS` to the list of required fields in the `.env` file [#115](https://github.com/ziotom78/instrumentdb/pull/115)
 
 -   Remove limit in number of fields within a POST request [#114](https://github.com/ziotom78/instrumentdb/pull/114)
 
