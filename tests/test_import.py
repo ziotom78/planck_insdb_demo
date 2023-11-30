@@ -20,7 +20,6 @@ def check_deps_in_schema(test):
     horn01_synth_obj = DataFile.objects.get(uuid="37bb70e4-29b2-4657-ba0b-4ccefbc5ae36")
     horn01_grasp_obj = DataFile.objects.get(uuid="a6dd07ee-9721-4453-abb1-e58aa53a9c01")
 
-    print(f"{horn01_synth_obj.dependencies.filter(uuid=horn01_grasp_obj.uuid)=}")
     test.assertTrue(
         horn01_synth_obj.dependencies.filter(uuid=horn01_grasp_obj.uuid).exists()
     )
