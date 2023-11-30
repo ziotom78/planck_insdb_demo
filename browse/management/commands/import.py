@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import json
-from typing import Any
+from typing import Any, List, Dict
 from uuid import UUID
 import yaml
 
@@ -54,7 +54,7 @@ class Command(BaseCommand):
         entities,
         parent=None,
         nest_level=0,
-        dependencies_to_add: dict[UUID, list[UUID]] = {},
+        dependencies_to_add: Dict[UUID, List[UUID]] = {},
     ):
         for entity_dict in entities:
             cur_entity_name = entity_dict.get("name")
@@ -173,7 +173,7 @@ class Command(BaseCommand):
         quantities,
         parent_entity=None,
         nest_level=0,
-        dependencies_to_add: dict[UUID, list[UUID]] = {},
+        dependencies_to_add: Dict[UUID, List[UUID]] = {},
     ):
         for quantity_dict in quantities:
             name = quantity_dict.get("name")
@@ -255,7 +255,7 @@ class Command(BaseCommand):
         data_files,
         parent_quantity=None,
         nest_level=0,
-        dependencies_to_add: dict[UUID, list[UUID]] = {},
+        dependencies_to_add: Dict[UUID, List[UUID]] = {},
     ):
         for data_file_dict in data_files:
             name = data_file_dict.get("name")
@@ -357,7 +357,7 @@ class Command(BaseCommand):
             if plot_fp:
                 plot_fp.close()
 
-    def update_dependencies(self, dependencies_to_add: dict[UUID, list[UUID]]):
+    def update_dependencies(self, dependencies_to_add: Dict[UUID, List[UUID]]):
         for data_file_uuid, dependencies in dependencies_to_add.items():
             if not dependencies:
                 continue
@@ -502,7 +502,7 @@ etc.) will be looked in the directory where this file resides.
             # in the JSON/YAML file, so we must gather all of them before calling
             # self.update_dependencies(). That's the reason why we pass the
             # dictionary "dependencies_to_add" to all the self_create_* methods
-            dependencies_to_add = {}  # type: dict[UUID, list[UUID]]
+            dependencies_to_add = {}  # type: Dict[UUID, List[UUID]]
             self.create_entities(
                 schema.get("entities", []), dependencies_to_add=dependencies_to_add
             )
