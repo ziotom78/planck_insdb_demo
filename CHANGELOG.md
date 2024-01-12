@@ -1,6 +1,22 @@
 # HEAD
 
--   Add the variable `CSRF_TRUSTED_ORIGINS` to the list of fields in the `.env` file [#115](https://github.com/ziotom78/instrumentdb/pull/115)
+# Version 2.0.2
+
+-   Make sure that unauthorized users cannot browse the contents of the database [#128](https://github.com/ziotom78/instrumentdb/pull/128)
+
+# Version 2.0.1
+
+-   Make the links in the top bar active when appropriate [#125](https://github.com/ziotom78/instrumentdb/pull/125)
+
+-   Permit cross-references in dependencies when importing databases [#124](https://github.com/ziotom78/instrumentdb/pull/124)
+
+-   Permit longer file names [#123](https://github.com/ziotom78/instrumentdb/pull/123)
+
+-   Return more useful errors when wrong paths are used [#121](https://github.com/ziotom78/instrumentdb/pull/121)
+
+# Version 2.0.0
+
+-   **Breaking change** Add the variable `CSRF_TRUSTED_ORIGINS` to the list of required fields in the `.env` file [#115](https://github.com/ziotom78/instrumentdb/pull/115)
 
 -   Remove limit in number of fields within a POST request [#114](https://github.com/ziotom78/instrumentdb/pull/114)
 
