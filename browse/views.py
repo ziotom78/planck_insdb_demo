@@ -191,26 +191,24 @@ class DataFilePlotDownloadView(LoginRequiredMixin, View):
         return resp
 
 
-class ReleaseDocumentDownloadView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        "Allow the user to download a release document"
+@login_required
+def download_release_document(request, pk):
+    cur_object = get_object_or_404(Release, pk=pk)
+    release_document_data = cur_object.release_document
 
-        cur_object = get_object_or_404(Release, pk=pk)
-        release_document_data = cur_object.release_document
+    try:
+        release_document_data.open()
+    except ValueError:
+        raise Http404("The release document was not uploaded to the database")
 
-        try:
-            release_document_data.open()
-        except ValueError:
-            raise Http404("The release document was not uploaded to the database")
+    data = release_document_data.read()
+    resp = HttpResponse(data, content_type=cur_object.release_document_mime_type)
 
-        data = release_document_data.read()
-        resp = HttpResponse(data, content_type=cur_object.release_document_mime_type)
-
-        resp["Content-Disposition"] = 'filename="{name}{ext}"'.format(
-            name=cur_object.tag,
-            ext=mimetypes.guess_extension(cur_object.release_document_mime_type),
-        )
-        return resp
+    resp["Content-Disposition"] = 'filename="{name}{ext}"'.format(
+        name=cur_object.tag,
+        ext=mimetypes.guess_extension(cur_object.release_document_mime_type),
+    )
+    return resp
 
 
 ###########################################################################
@@ -383,6 +381,9 @@ def navigate_tree_of_entities(url_components: List[str]) -> Entity:
     # caller mistakenly writes two `/` characters, like in
     # `/tree/satellite//telescope/cad`.)
     url_components = [x for x in url_components if x != ""]
+
+    if not url_components:
+        raise Http404("Empty path to entity")
 
     matching_entries = Entity.objects.filter(name=url_components[0])
 
