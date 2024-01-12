@@ -76,7 +76,7 @@ def entity_tree_view(request):
     )
 
 
-class EntityView(DetailView):
+class EntityView(LoginRequiredMixin, DetailView):
     model = Entity
 
     def get_context_data(self, **kwargs):
@@ -92,7 +92,7 @@ class EntityView(DetailView):
 ###########################################################################
 
 
-class QuantityView(DetailView):
+class QuantityView(LoginRequiredMixin, DetailView):
     model = Quantity
 
     def get_context_data(self, **kwargs):
@@ -108,7 +108,7 @@ class QuantityView(DetailView):
 ###########################################################################
 
 
-class DataFileView(DetailView):
+class DataFileView(LoginRequiredMixin, DetailView):
     model = DataFile
 
     def get_context_data(self, **kwargs):
@@ -121,11 +121,11 @@ class DataFileView(DetailView):
         return context
 
 
-class FormatSpecificationListView(ListView):
+class FormatSpecificationListView(LoginRequiredMixin, ListView):
     model = FormatSpecification
 
 
-class FormatSpecificationDownloadView(View):
+class FormatSpecificationDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk):
         "Allow the user to download a data file"
 
@@ -148,7 +148,7 @@ class FormatSpecificationDownloadView(View):
         return resp
 
 
-class DataFileDownloadView(View):
+class DataFileDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk):
         "Allow the user to download a data file"
 
@@ -169,7 +169,7 @@ class DataFileDownloadView(View):
         return resp
 
 
-class DataFilePlotDownloadView(View):
+class DataFilePlotDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk):
         "Allow the user to download the plot associated with a data file"
 
@@ -191,7 +191,7 @@ class DataFilePlotDownloadView(View):
         return resp
 
 
-class ReleaseDocumentDownloadView(View):
+class ReleaseDocumentDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk):
         "Allow the user to download a release document"
 
@@ -222,7 +222,7 @@ class ReleaseListView(LoginRequiredMixin, ListView):
     ordering = ["-tag"]
 
 
-class ReleaseView(DetailView):
+class ReleaseView(LoginRequiredMixin, DetailView):
     model = Release
 
     def get_context_data(self, **kwargs):
@@ -235,7 +235,7 @@ class ReleaseView(DetailView):
         return context
 
 
-class ReleaseDownloadView(View):
+class ReleaseDownloadView(LoginRequiredMixin, View):
     def get(self, request, pk):
         "Allow the user to download a release JSON file"
 
